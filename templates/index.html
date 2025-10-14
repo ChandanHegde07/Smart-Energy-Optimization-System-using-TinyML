@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Energy TinyML Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Smart Energy TinyML Dashboard</h1>
+            <div class="status-indicator">
+                <span class="status-dot" id="statusDot"></span>
+                <span id="statusText">Connecting...</span>
+            </div>
+        </div>
+
+        <div class="control-panel">
+            <div class="toggle-container">
+                <span class="toggle-label">Live Updates</span>
+                <label class="switch">
+                    <input type="checkbox" id="autoRefreshToggle" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <button class="refresh-btn" id="manualRefresh">🔄 Refresh Now</button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">💡</div>
+                <div class="stat-content">
+                    <h3>Energy Saved</h3>
+                    <p class="stat-value" id="energySaved">0.000</p>
+                    <span class="stat-unit">kWh</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🌱</div>
+                <div class="stat-content">
+                    <h3>CO₂ Reduced</h3>
+                    <p class="stat-value" id="co2Saved">0.00</p>
+                    <span class="stat-unit">kg</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-content">
+                    <h3>Cost Savings</h3>
+                    <p class="stat-value" id="costSaved">₹0.00</p>
+                    <span class="stat-unit">Rupee</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚫</div>
+                <div class="stat-content">
+                    <h3>Lights Prevented</h3>
+                    <p class="stat-value" id="lightsPrevented">0</p>
+                    <span class="stat-unit">times</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="charts-row">
+            <div class="chart-container half-width">
+                <h2>📈 Energy Savings Over Time</h2>
+                <div class="chart-wrapper">
+                    <canvas id="energyChart"></canvas>
+                </div>
+            </div>
+            <div class="chart-container half-width">
+                <h2>🌡️ Temperature Trend</h2>
+                <div class="chart-wrapper">
+                    <canvas id="temperatureChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">📊 Live Sensor Feed</h2>
+        <div class="sensor-grid">
+            <div class="sensor-card">
+                <div class="sensor-icon">👁️</div>
+                <h3>PIR Motion</h3>
+                <p class="sensor-value" id="pir-value">--</p>
+                <span class="sensor-label">Detection Status</span>
+            </div>
+            <div class="sensor-card">
+                <div class="sensor-icon">💡</div>
+                <h3>LDR Light</h3>
+                <p class="sensor-value" id="ldr-value">--</p>
+                <span class="sensor-label">Brightness Level</span>
+            </div>
+            <div class="sensor-card">
+                <div class="sensor-icon">🌡️</div>
+                <h3>Temperature</h3>
+                <p class="sensor-value" id="temp-value">--</p>
+                <span class="sensor-label">°C</span>
+            </div>
+        </div>
+
+        <div class="temp-stats">
+            <div class="temp-stat-item">
+                <span class="temp-label">Average</span>
+                <span class="temp-stat-value" id="avgTemp">--°C</span>
+            </div>
+            <div class="temp-stat-item">
+                <span class="temp-label">Maximum</span>
+                <span class="temp-stat-value" id="maxTemp">--°C</span>
+            </div>
+            <div class="temp-stat-item">
+                <span class="temp-label">Minimum</span>
+                <span class="temp-stat-value" id="minTemp">--°C</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h2>🤖 AI Decision History</h2>
+            <div class="chart-wrapper">
+                <canvas id="predictionChart"></canvas>
+            </div>
+        </div>
+
+        <div class="prediction-card">
+            <h2>🎯 Current AI Decision</h2>
+            <div id="result">Awaiting Data...</div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
