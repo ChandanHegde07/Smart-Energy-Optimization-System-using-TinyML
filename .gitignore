@@ -72,3 +72,5 @@ node_modules/
 *.hex
 *.elf
 *.bin
+
+Sensor Data.csv 

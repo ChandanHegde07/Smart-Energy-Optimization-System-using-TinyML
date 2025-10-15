@@ -38,7 +38,6 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 **Backend:**
 - Python 3.8+
 - Flask (Web Framework)
-- NumPy (Data Processing)
 
 **Frontend:**
 - HTML5 / CSS3
@@ -54,5 +53,8 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 **Libraries:**
 - ArduinoJson
 - DHT Sensor Library
-
+- NumPy 
+- Pandas
+- Scikit-learn
+- TensorFlow
 
