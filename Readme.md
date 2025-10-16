@@ -2,6 +2,7 @@
 
 A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, and environmental sensors. The system uses machine learning to make smart decisions about lighting based on motion detection, ambient light levels, and room temperature, resulting in significant energy savings.
 
+---
 
 ## Features
 
@@ -12,6 +13,8 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 - **Modern UI**: Glassmorphism design with smooth animations and responsive layout
 - **Auto-refresh**: Configurable live data updates every 2 seconds
 - **Simulation Mode**: Test without hardware using realistic sensor data generation
+
+---
 
 ## Dashboard Components
 
@@ -32,6 +35,8 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 - Temperature monitoring graph
 - AI decision history
 - Real-time status indicators
+
+---
 
 ## Technology Stack
 
@@ -57,4 +62,5 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 - Pandas
 - Scikit-learn
 - TensorFlow
+- Seaborn
 
