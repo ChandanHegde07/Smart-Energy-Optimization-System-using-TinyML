@@ -73,4 +73,9 @@ node_modules/
 *.elf
 *.bin
 
-Sensor Data.csv 
+Sensor Data.csv
+Sensor_Data_Engineered.csv
+occupancy_fnn_int8.tflite
+occupancy_fnn_model.h5
+scaler.pkl
+deployment_params.pkl
