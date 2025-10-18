@@ -79,3 +79,9 @@ occupancy_fnn_int8.tflite
 occupancy_fnn_model.h5
 scaler.pkl
 deployment_params.pkl
+
+reports/statistics.json
+predictions.csv
+
+
+reports_labeled/metrics.json
