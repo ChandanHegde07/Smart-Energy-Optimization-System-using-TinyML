@@ -61,7 +61,6 @@ Thumbs.db
 
 # Project specific
 *.tflite
-models/
 data/
 temp/
 
