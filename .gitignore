@@ -70,7 +70,6 @@ node_modules/
 # Arduino build files
 *.hex
 *.elf
-*.bin
 
 Sensor Data.csv
 Sensor_Data_Engineered.csv
