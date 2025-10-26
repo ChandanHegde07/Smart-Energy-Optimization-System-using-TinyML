@@ -10,7 +10,6 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 - **TinyML Integration**: Intelligent decision-making using machine learning models
 - **Energy Analytics**: Track energy savings, CO₂ reduction, and cost savings
 - **Interactive Charts**: Beautiful Chart.js visualizations with historical data trends
-- **Modern UI**: Glassmorphism design with smooth animations and responsive layout
 - **Auto-refresh**: Configurable live data updates every 2 seconds
 - **Simulation Mode**: Test without hardware using realistic sensor data generation
 
