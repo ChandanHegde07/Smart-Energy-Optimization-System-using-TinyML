@@ -41,7 +41,6 @@
             position: relative;
         }
 
-        /* Animated background particles */
         .particles {
             position: fixed;
             top: 0;
@@ -68,7 +67,6 @@
             100% { transform: translateY(-100vh) translateX(100px); opacity: 0; }
         }
 
-        /* Gradient orbs */
         .orb {
             position: fixed;
             border-radius: 50%;
@@ -261,8 +259,6 @@
         .nav-button:hover i {
             transform: rotate(10deg) scale(1.2);
         }
-
-        /* Ripple effect */
         .nav-button::after {
             content: '';
             position: absolute;
@@ -281,7 +277,6 @@
             height: 300px;
         }
 
-        /* Feature Grid */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -361,8 +356,6 @@
             line-height: 1.7;
             font-weight: 300;
         }
-
-        /* Glow effect on hover */
         .feature-item::after {
             content: '';
             position: absolute;
@@ -382,7 +375,6 @@
             opacity: 0.1;
         }
 
-        /* Scroll indicator */
         .scroll-indicator {
             position: absolute;
             bottom: 2rem;
@@ -402,7 +394,6 @@
             50% { transform: translateX(-50%) translateY(10px); }
         }
 
-        /* Responsive Design */
         @media (max-width: 1400px) {
             .container {
                 width: 95vw;
@@ -493,7 +484,6 @@
             }
         }
 
-        /* Loading animation */
         @keyframes shimmer {
             0% { background-position: -1000px 0; }
             100% { background-position: 1000px 0; }
@@ -501,21 +491,17 @@
     </style>
 </head>
 <body>
-    <!-- Animated background particles -->
     <div class="particles" id="particles"></div>
     
-    <!-- Gradient orbs -->
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
 
     <div class="container">
-        <!-- Header Section -->
         <div class="header">
             <h1>Smart Optimization</h1>
             <p class="subtitle">Your intelligent platform for data-driven decisions. Harness the power of AI to refine strategies and maximize outcomes across various domains.</p>
         </div>
 
-        <!-- Navigation Buttons -->
         <div class="nav-buttons">
             <a href="{{ url_for('classroom_simulation') }}" class="nav-button classroom-btn">
                 <i class="fas fa-chalkboard-teacher"></i>
@@ -553,7 +539,6 @@
     </div>
 
     <script>
-        // Create animated particles
         const particlesContainer = document.getElementById('particles');
         const particleCount = 30;
 
@@ -566,7 +551,6 @@
             particlesContainer.appendChild(particle);
         }
 
-        // Add ripple effect to buttons
         document.querySelectorAll('.nav-button').forEach(button => {
             button.addEventListener('click', function(e) {
                 const ripple = document.createElement('div');
@@ -586,7 +570,6 @@
             });
         });
 
-        // Parallax effect for feature items
         document.addEventListener('mousemove', (e) => {
             const items = document.querySelectorAll('.feature-item');
             const x = e.clientX / window.innerWidth;
@@ -602,14 +585,10 @@
             });
         });
 
-        // Add hover sound effect (optional)
         const hoverSound = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBCl+zPLTgjMGHm7A7+OZPQ0PVa3m7q5aFw1Mn+Hxv3AiBSiByPLSfS8FKHvK8N+OQAoVXrPp7KlXFApFneDyvmwhBCl8zPLUgjIGHm3A7+OYPg0PVKzm7q5bGAxMnuHxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyvmwhBCl8zPLUgjIGHm3A7+OYPg0PVKzm7q5aGQ1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7KpWFApFneDyv2whBCl8zPLUgjIGHm3A7+OZPg0PVKzm7q5aGA1Mn+Hxv3AiBSiByPLSfS8FKHvK8d+NQAoVXrPp7A==');
         
         document.querySelectorAll('.feature-item, .nav-button').forEach(element => {
             element.addEventListener('mouseenter', () => {
-                // Uncomment to enable sound
-                // hoverSound.currentTime = 0;
-                // hoverSound.play().catch(() => {});
             });
         });
     </script>

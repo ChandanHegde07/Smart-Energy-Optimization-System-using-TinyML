@@ -85,3 +85,4 @@ predictions.csv
 reports_labeled/metrics.json
 
 train.ipynb
+model_architecture.py
