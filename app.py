@@ -2,7 +2,9 @@ from flask import Flask, render_template, request, jsonify
 from datetime import datetime
 import numpy as np
 
+
 app = Flask(__name__)
+
 
 class DataStore:
     def __init__(self):
@@ -49,14 +51,18 @@ class DataStore:
         self.current_temp = temp  
         self.current_prediction = prediction
 
+
 data_store = DataStore()
+
 
 # --- TinyML Model ---
 def load_tinyml_model():
     """Load your TinyML model here"""
     return None
 
+
 model = load_tinyml_model()
+
 
 def neural_network_predict(pir, ldr, temperature):  
     """
@@ -71,6 +77,7 @@ def neural_network_predict(pir, ldr, temperature):
         return 'Light OFF (Bright)'
     else:
         return 'Light OFF (No Motion)'
+
 
 def calculate_energy_savings(prediction, pir, ldr, temperature): 
     """Calculate energy saved by AI decision"""
@@ -90,10 +97,26 @@ def calculate_energy_savings(prediction, pir, ldr, temperature):
     
     return 0.0
 
+
+# --- ROUTES ---
+
 @app.route('/')
+def home():
+    """Home page with navigation"""
+    return render_template('home.html')
+
+
+@app.route('/dashboard')
 def index():
-    """Serve main dashboard"""
+    """Serve main dashboard (formerly index)"""
     return render_template('index.html')
+
+
+@app.route('/classroom_simulation')
+def classroom_simulation():
+    """Serve classroom simulation page"""
+    return render_template('classroom_simulation.html')
+
 
 @app.route('/update', methods=['POST'])
 def update_data():
@@ -122,6 +145,7 @@ def update_data():
     except Exception as e:
         print(f"Error in /update: {e}")
         return jsonify({'success': False, 'error': str(e)}), 400
+
 
 @app.route('/get_prediction')
 def get_prediction():
@@ -165,6 +189,7 @@ def get_prediction():
         print(f"Error in /get_prediction: {e}")
         return jsonify({'error': str(e)}), 500
 
+
 @app.route('/simulate', methods=['GET'])
 def simulate_data():
     """Simulate sensor data for testing without hardware"""
@@ -206,12 +231,15 @@ def simulate_data():
         'message': f'Generated {count} simulated sensor reading(s) with temperature'
     })
 
+
 if __name__ == '__main__':
     print("=" * 70)
     print("🚀 Smart Energy TinyML Dashboard with Temperature Monitoring")
     print("=" * 70)
     print("📡 Server accessible at:")
-    print("   - Local: http://127.0.0.1:5001")
+    print("   - Home Page: http://127.0.0.1:5001")
+    print("   - Dashboard: http://127.0.0.1:5001/dashboard")
+    print("   - Classroom Simulation: http://127.0.0.1:5001/classroom_simulation")
     print("   - Network: http://YOUR_IP:5001")
     print("=" * 70)
     print("🧪 Test without hardware: http://127.0.0.1:5001/simulate?count=20")

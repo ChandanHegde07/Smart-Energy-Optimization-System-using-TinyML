@@ -32,22 +32,26 @@
         .view-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .view-btn { background: #e0e0e0; color: #333; }
         .view-btn.active { background: #667eea; color: white; box-shadow: 0 0 10px #667eea; }
+        .loading { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: white; font-size: 1.5em; text-align: center; z-index: 200; }
     </style>
 </head>
 <body>
     <div id="canvas-container"></div>
+    <div class="loading" id="loadingScreen">⏳ Loading 3D Classroom...</div>
     <div class="overlay">
         <h2>🏫 Smart Classroom (4 Zones)</h2>
         <div class="sensor-grid"> <div class="sensor-item"><div class="sensor-label">Occupancy</div><div class="sensor-value" id="occupancy">0</div></div> <div class="sensor-item"><div class="sensor-label">Temperature</div><div class="sensor-value" id="temperature">22°C</div></div> <div class="sensor-item"><div class="sensor-label">Light Level</div><div class="sensor-value" id="lightLevel">300</div></div> <div class="sensor-item"><div class="sensor-label">Humidity</div><div class="sensor-value" id="humidity">45%</div></div> </div>
         <div class="controls"> <button class="control-btn light-btn" onclick="toggleAllLights()">Lights <span class="status status-off" id="lightStatus"></span></button> <button class="control-btn fan-btn" onclick="toggleAllFans()">Fan <span class="status status-off" id="fanStatus"></span></button> <button class="control-btn auto-btn" onclick="toggleAutoMode()">🤖 Auto Mode <span class="status status-off" id="autoStatus"></span></button> <button class="control-btn sim-btn" onclick="toggleSimulationMode()">🔬 Manual Test <span class="status status-off" id="simStatus"></span></button> </div>
-        <div class="view-controls"> <h3>📷 Camera Views</h3> <div class="view-grid"> <button id="btn-teacher" class="control-btn view-btn" onclick="setView('teacher')">Teacher</button> <button id="btn-student" class="control-btn view-btn" onclick="setView('student')">Student</button> <button id="btn-cctv" class="control-btn view-btn" onclick="setView('cctv')">CCTV</button> <button id="btn-free" class="control-btn view-btn" onclick="setView('free')">Free View</button> </div> </div>
+        <div class="view-controls"> <h3>📷 Camera Views</h3> <div class="view-grid"> <button id="btn-teacher" class="control-btn view-btn" onclick="setView('teacher')">Teacher</button> <button id="btn-student" class="control-btn view-btn" onclick="setView('student')">Student</button> <button id="btn-cctv" class="control-btn view-btn" onclick="setView('cctv')">CCTV</button> <button id="btn-free" class="control-btn view-btn active" onclick="setView('free')">Free View</button> </div> </div>
         <div class="info"> <strong>Power:</strong> <span id="power">0 W</span><br> <strong>Status:</strong> <span id="systemStatus">MANUAL</span> </div>
     </div>
-    <div class="instructions" id="instructions"></div>
+    <div class="instructions" id="instructions">🖱️ Use mouse to rotate, pan, and zoom.</div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
 
     <script>
         // --- Globals & State ---
@@ -72,33 +76,67 @@
             updateFanSound() { const anyFanOn = Object.values(zones).some(z => z.fanOn); if (anyFanOn && !this.fanSoundSource) { this.fanSoundSource = this.playSound('fan', true, 0.4); } else if (!anyFanOn && this.fanSoundSource) { this.fanSoundSource.stop(); this.fanSoundSource = null; } }
         };
 
+
         function init() {
             scene = new THREE.Scene();
             scene.background = new THREE.Color(0x87CEEB);
             camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 25, 25);
+            
             renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.shadowMap.enabled = true;
             renderer.shadowMap.type = THREE.PCFSoftShadowMap;
             document.getElementById('canvas-container').appendChild(renderer.domElement);
+            
             controls = new THREE.OrbitControls(camera, renderer.domElement);
             controls.enableDamping = true;
             controls.dampingFactor = 0.05;
+            controls.target.set(0, 0, 0);
+            
             raycaster = new THREE.Raycaster();
             soundManager.init();
             soundManager.loadSound('lightSwitch', 'https://cdn.freesound.org/previews/27/27314_37876-lq.mp3');
             soundManager.loadSound('fan', 'https://cdn.freesound.org/previews/243/243733_4284964-lq.mp3');
-            loadingManager.onLoad = () => { console.log("All models loaded!"); startScene(); };
-            loadingManager.onError = (url) => { console.error(`Error loading ${url}.`); startScene(); };
-            gltfLoader.load('models/desk/scene.gltf', (gltf) => { deskModel = gltf.scene; });
-            gltfLoader.load('models/student/scene.gltf', (gltf) => { studentModel = gltf.scene; });
+            
+            loadingManager.onLoad = () => { 
+                console.log("All models loaded!"); 
+                document.getElementById('loadingScreen').style.display = 'none';
+                startScene(); 
+            };
+            loadingManager.onProgress = (url, loaded, total) => {
+                console.log(`Loading: ${loaded}/${total} - ${url}`);
+            };
+            loadingManager.onError = (url) => { 
+                console.error(`Error loading ${url}. Using fallback models.`); 
+            };
+            
+            // Try to load external models (will fail gracefully if not found)
+            gltfLoader.load(
+                'models/desk/scene.gltf', 
+                (gltf) => { deskModel = gltf.scene; console.log('Desk model loaded'); },
+                undefined,
+                (error) => { console.warn('Desk model not found, using fallback'); }
+            );
+            gltfLoader.load(
+                'models/student/scene.gltf', 
+                (gltf) => { studentModel = gltf.scene; console.log('Student model loaded'); },
+                undefined,
+                (error) => { console.warn('Student model not found, using fallback'); }
+            );
+            
+            // Start scene after a short delay to allow model loading attempts
+            setTimeout(() => {
+                document.getElementById('loadingScreen').style.display = 'none';
+                startScene();
+            }, 2000);
         }
+
 
         function startScene() {
             createClassroom();
             createLighting();
             createFurniture();
-            setView('free');
             window.addEventListener('resize', onWindowResize);
             document.body.addEventListener('click', onCanvasClick, true);
             animate();
@@ -106,52 +144,91 @@
             updateSensors();
         }
 
+
         function createFurniture() {
             const teacherDesk = createDesk(1.2);
             if(teacherDesk) { teacherDesk.position.set(0, 0, -10.5); scene.add(teacherDesk); }
+            
             for (let row = 0; row < 7; row++) {
                 for (let col = 0; col < 5; col++) {
-                    const student = createStudent(); allStudents.push(student);
-                    const desk = createDesk(0.8); if (!desk) continue;
+                    const student = createStudent(); 
+                    allStudents.push(student);
+                    const desk = createDesk(0.8); 
+                    if (!desk) continue;
+                    
                     const deskPosition = new THREE.Vector3(-12 + col * 6, 0.36, -6 + row * 2.5);
                     desk.position.copy(deskPosition);
                     desk.userData.student = student;
                     
-                    // --- STUDENT POSITIONING LOGIC ---
-                    student.position.copy(deskPosition); // Start at the same spot
-                    
-                    // Fine-tune these values for your specific models
-                    student.position.y += -0.35;  // Adjust Up/Down (Height) - start on the floor
-                    student.position.z += 0.2;  // Adjust Front/Back (move into chair)
-                    student.position.x += 0.0;  // Adjust Left/Right (center on chair)
+                    // Student positioning
+                    student.position.copy(deskPosition);
+                    student.position.y += -0.35;
+                    student.position.z += 0.2;
+                    student.position.x += 0.0;
                     
                     const x = desk.position.x, z = desk.position.z;
                     if (x < 0 && z < 0) desk.userData.zone = 'frontLeft';
                     else if (x >= 0 && z < 0) desk.userData.zone = 'frontRight';
                     else if (x < 0 && z >= 0) desk.userData.zone = 'backLeft';
                     else if (x >= 0 && z >= 0) desk.userData.zone = 'backRight';
+                    
                     scene.add(desk);
                     scene.add(student);
                     clickableObjects.push(desk);
                 }
             }
-            zones.frontLeft.fan = createFan(new THREE.Vector3(-7, 11, -5)); zones.frontRight.fan = createFan(new THREE.Vector3(7, 11, -5));
-            zones.backLeft.fan = createFan(new THREE.Vector3(-7, 11, 5)); zones.backRight.fan = createFan(new THREE.Vector3(7, 11, 5));
+            
+            zones.frontLeft.fan = createFan(new THREE.Vector3(-7, 11, -5)); 
+            zones.frontRight.fan = createFan(new THREE.Vector3(7, 11, -5));
+            zones.backLeft.fan = createFan(new THREE.Vector3(-7, 11, 5)); 
+            zones.backRight.fan = createFan(new THREE.Vector3(7, 11, 5));
             scene.add(zones.frontLeft.fan, zones.frontRight.fan, zones.backLeft.fan, zones.backRight.fan);
         }
+
 
         function createDesk(scale) {
             if (deskModel) {
                 const desk = deskModel.clone();
                 desk.scale.set(scale, scale, scale);
-                // --- ROTATION UPDATED HERE ---
-                desk.rotation.y = -Math.PI/2; // Rotates 180 degrees to face forward
+                desk.rotation.y = -Math.PI/2;
                 desk.traverse(child => { if (child.isMesh) { child.castShadow = true; child.receiveShadow = true; } });
                 return desk;
             } else {
+                // FALLBACK DESK - Simple geometric desk
                 const deskGroup = new THREE.Group();
-                const top = new THREE.Mesh(new THREE.BoxGeometry(2 * scale, 0.1 * scale, 1.2 * scale), new THREE.MeshStandardMaterial({ color: 0x8B4513 }));
-                top.position.y = 0.75 * scale; top.castShadow = true; deskGroup.add(top);
+                const top = new THREE.Mesh(
+                    new THREE.BoxGeometry(2 * scale, 0.1 * scale, 1.2 * scale), 
+                    new THREE.MeshStandardMaterial({ color: 0x8B4513 })
+                );
+                top.position.y = 0.75 * scale; 
+                top.castShadow = true; 
+                top.receiveShadow = true;
+                deskGroup.add(top);
+                
+                // Add desk legs
+                const legGeometry = new THREE.CylinderGeometry(0.05 * scale, 0.05 * scale, 0.75 * scale);
+                const legMaterial = new THREE.MeshStandardMaterial({ color: 0x654321 });
+                
+                const leg1 = new THREE.Mesh(legGeometry, legMaterial);
+                leg1.position.set(0.9 * scale, 0.375 * scale, 0.5 * scale);
+                leg1.castShadow = true;
+                deskGroup.add(leg1);
+                
+                const leg2 = new THREE.Mesh(legGeometry, legMaterial);
+                leg2.position.set(-0.9 * scale, 0.375 * scale, 0.5 * scale);
+                leg2.castShadow = true;
+                deskGroup.add(leg2);
+                
+                const leg3 = new THREE.Mesh(legGeometry, legMaterial);
+                leg3.position.set(0.9 * scale, 0.375 * scale, -0.5 * scale);
+                leg3.castShadow = true;
+                deskGroup.add(leg3);
+                
+                const leg4 = new THREE.Mesh(legGeometry, legMaterial);
+                leg4.position.set(-0.9 * scale, 0.375 * scale, -0.5 * scale);
+                leg4.castShadow = true;
+                deskGroup.add(leg4);
+                
                 return deskGroup;
             }
         }
@@ -160,24 +237,102 @@
             if (studentModel) {
                 const student = studentModel.clone();
                 student.scale.set(1.0, 1.0, 1.0);
-                // --- ROTATION UPDATED HERE ---
-                student.rotation.y = Math.PI; // Rotates 180 degrees to face forward
+                student.rotation.y = Math.PI;
                 student.traverse(child => { if (child.isMesh) { child.castShadow = true; } });
                 student.visible = false;
                 return student;
             } else {
+                // FALLBACK STUDENT - Simple geometric person
                 const student = new THREE.Group();
-                const body = new THREE.Mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.8, 16), new THREE.MeshStandardMaterial({ color: 0x4285f4 })); body.castShadow = true; student.add(body);
-                const head = new THREE.Mesh(new THREE.SphereGeometry(0.25, 16, 16), new THREE.MeshStandardMaterial({ color: 0xffdbac })); head.position.y = 0.7; head.castShadow = true; student.add(head);
+                
+                // Body
+                const body = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.3, 0.3, 0.8, 16), 
+                    new THREE.MeshStandardMaterial({ color: 0x4285f4 })
+                );
+                body.position.y = 0.4;
+                body.castShadow = true; 
+                student.add(body);
+                
+                // Head
+                const head = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.25, 16, 16), 
+                    new THREE.MeshStandardMaterial({ color: 0xffdbac })
+                );
+                head.position.y = 1.1;
+                head.castShadow = true; 
+                student.add(head);
+                
+                // Arms
+                const armGeometry = new THREE.CylinderGeometry(0.08, 0.08, 0.6, 8);
+                const armMaterial = new THREE.MeshStandardMaterial({ color: 0x4285f4 });
+                
+                const leftArm = new THREE.Mesh(armGeometry, armMaterial);
+                leftArm.position.set(-0.35, 0.5, 0);
+                leftArm.rotation.z = Math.PI / 6;
+                leftArm.castShadow = true;
+                student.add(leftArm);
+                
+                const rightArm = new THREE.Mesh(armGeometry, armMaterial);
+                rightArm.position.set(0.35, 0.5, 0);
+                rightArm.rotation.z = -Math.PI / 6;
+                rightArm.castShadow = true;
+                student.add(rightArm);
+                
                 student.visible = false;
                 return student;
             }
         }
         
-        // (The rest of the boilerplate functions are unchanged)
         function onCanvasClick(event) { if (soundManager.audioContext && soundManager.audioContext.state === 'suspended') { soundManager.audioContext.resume(); } if (event.target.closest('.overlay')) return; mouse.x = (event.clientX / window.innerWidth) * 2 - 1; mouse.y = -(event.clientY / window.innerHeight) * 2 + 1; raycaster.setFromCamera(mouse, camera); const intersects = raycaster.intersectObjects(clickableObjects, true); if (intersects.length > 0 && simulationMode) { let clickedModel = intersects[0].object; while (clickedModel.parent && !clickedModel.userData.student) { clickedModel = clickedModel.parent; } if (clickedModel.userData.student) { const student = clickedModel.userData.student; const zoneKey = clickedModel.userData.zone; student.visible = !student.visible; zones[zoneKey].occupancy += student.visible ? 1 : -1; runAutoLogic(); } } }
         function animate() { requestAnimationFrame(animate); for (const k in zones) { if (zones[k].fan && zones[k].fan.userData.rotating) { zones[k].fan.rotation.y += 0.1; } } controls.update(); renderer.render(scene, camera); }
-        function createLighting() { scene.add(new THREE.AmbientLight(0x404040, 1.0)); const sunlight = new THREE.DirectionalLight(0xffffff, 1.0); sunlight.position.set(20, 30, 15); sunlight.castShadow = true; sunlight.shadow.mapSize.width = 1024; sunlight.shadow.mapSize.height = 1024; scene.add(sunlight); const lightPositions = { frontLeft: { lightPos: [-8, 11.5, -5] }, frontRight: { lightPos: [8, 11.5, -5] }, backLeft: { lightPos: [-8, 11.5, 5] }, backRight: { lightPos: [8, 11.5, 5] } }; for (const zoneKey in lightPositions) { const p = lightPositions[zoneKey].lightPos; const fixture = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.3, 16), new THREE.MeshStandardMaterial({ color: 0x333333 })); fixture.position.set(p[0], p[1], p[2]); scene.add(fixture); const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.3, 16, 16), new THREE.MeshStandardMaterial({ color: 0xFFFFAA, emissive: 0x000000 })); bulb.position.set(p[0], p[1] - 0.5, p[2]); scene.add(bulb); const pointLight = new THREE.PointLight(0xFFFFAA, 0, 15, 2); pointLight.position.set(p[0], p[1] - 0.5, p[2]); pointLight.castShadow = true; scene.add(pointLight); zones[zoneKey].lights = pointLight; zones[zoneKey].bulb = bulb; } }
+        function createLighting() { 
+            // Brighter ambient light so scene is visible even without zone lights
+            scene.add(new THREE.AmbientLight(0x404040, 1.5)); 
+            
+            const sunlight = new THREE.DirectionalLight(0xffffff, 1.2); 
+            sunlight.position.set(20, 30, 15); 
+            sunlight.castShadow = true; 
+            sunlight.shadow.mapSize.width = 2048; 
+            sunlight.shadow.mapSize.height = 2048; 
+            sunlight.shadow.camera.left = -20;
+            sunlight.shadow.camera.right = 20;
+            sunlight.shadow.camera.top = 20;
+            sunlight.shadow.camera.bottom = -20;
+            scene.add(sunlight); 
+            
+            const lightPositions = { 
+                frontLeft: { lightPos: [-8, 11.5, -5] }, 
+                frontRight: { lightPos: [8, 11.5, -5] }, 
+                backLeft: { lightPos: [-8, 11.5, 5] }, 
+                backRight: { lightPos: [8, 11.5, 5] } 
+            }; 
+            
+            for (const zoneKey in lightPositions) { 
+                const p = lightPositions[zoneKey].lightPos; 
+                const fixture = new THREE.Mesh(
+                    new THREE.CylinderGeometry(0.5, 0.5, 0.3, 16), 
+                    new THREE.MeshStandardMaterial({ color: 0x333333 })
+                ); 
+                fixture.position.set(p[0], p[1], p[2]); 
+                scene.add(fixture); 
+                
+                const bulb = new THREE.Mesh(
+                    new THREE.SphereGeometry(0.3, 16, 16), 
+                    new THREE.MeshStandardMaterial({ color: 0xFFFFAA, emissive: 0x000000 })
+                ); 
+                bulb.position.set(p[0], p[1] - 0.5, p[2]); 
+                scene.add(bulb); 
+                
+                const pointLight = new THREE.PointLight(0xFFFFAA, 0, 15, 2); 
+                pointLight.position.set(p[0], p[1] - 0.5, p[2]); 
+                pointLight.castShadow = true; 
+                scene.add(pointLight); 
+                
+                zones[zoneKey].lights = pointLight; 
+                zones[zoneKey].bulb = bulb; 
+            } 
+        }
         function toggleAllLights() { if (autoMode || simulationMode) return; const newState = !zones.frontLeft.lightsOn; for (const k in zones) { updateZoneState(k, newState, zones[k].fanOn, true); } soundManager.playSound('lightSwitch'); updatePowerAndUIStatus(); }
         function toggleAllFans() { if (autoMode || simulationMode) return; const newState = !zones.frontLeft.fanOn; for (const k in zones) { updateZoneState(k, zones[k].lightsOn, newState, true); } updatePowerAndUIStatus(); }
         function updateZoneState(zoneKey, newLightsOn, newFanOn, isManualToggle = false) { const zone = zones[zoneKey]; const lightStateChanged = zone.lightsOn !== newLightsOn; zone.lightsOn = newLightsOn; zone.fanOn = newFanOn; if (zone.lights) zone.lights.intensity = newLightsOn ? 1.5 : 0; if (zone.bulb) zone.bulb.material.emissive.setHex(newLightsOn ? 0xFFFF00 : 0x000000); if (zone.fan) zone.fan.userData.rotating = newFanOn; if (lightStateChanged && !isManualToggle) { soundManager.playSound('lightSwitch'); } }
@@ -185,13 +340,14 @@
         function setView(viewType) { const buttons = document.querySelectorAll('.view-btn'); buttons.forEach(btn => btn.classList.remove('active')); document.getElementById(`btn-${viewType}`).classList.add('active'); controls.enabled = (viewType === 'free'); const instructions = document.getElementById('instructions'); if (viewType === 'free') { instructions.textContent = '🖱️ Use mouse to rotate, pan, and zoom.'; } else { instructions.textContent = `👁️ Now in ${viewType.charAt(0).toUpperCase() + viewType.slice(1)} View`; } switch (viewType) { case 'teacher': camera.position.set(0, 8, -12); controls.target.set(0, 5, 0); break; case 'student': camera.position.set(-7, 8, 8); controls.target.set(0, 6, -5); break; case 'cctv': camera.position.set(14, 13, 14); controls.target.set(-2, 0, -2); break; case 'free': default: camera.position.set(0, 25, 25); controls.target.set(0, 0, 0); break; } }
         function runAutoLogic() { const currentLight = parseInt(document.getElementById('lightLevel').textContent); const currentTemp = parseFloat(document.getElementById('temperature').textContent); for (const zoneKey in zones) { const zone = zones[zoneKey]; const hasOccupancy = zone.occupancy > 0; const newLightsOn = hasOccupancy && currentLight < LIGHT_THRESHOLD; const newFanOn = hasOccupancy && currentTemp > TEMP_THRESHOLD; updateZoneState(zoneKey, newLightsOn, newFanOn); } updatePowerAndUIStatus(); }
         function createClassroom() { const floor = new THREE.Mesh(new THREE.PlaneGeometry(30, 25), new THREE.MeshStandardMaterial({ color: 0x8B7355, roughness: 0.8 })); floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor); const wallMaterial = new THREE.MeshStandardMaterial({ color: 0xF5F5DC, roughness: 0.9 }); const backWall = new THREE.Mesh(new THREE.BoxGeometry(30, 12, 0.3), wallMaterial); backWall.position.set(0, 6, -12.5); backWall.receiveShadow = true; scene.add(backWall); const leftWall = new THREE.Mesh(new THREE.BoxGeometry(0.3, 12, 25), wallMaterial); leftWall.position.set(-15, 6, 0); leftWall.receiveShadow = true; scene.add(leftWall); const rightWall = new THREE.Mesh(new THREE.BoxGeometry(0.3, 12, 25), wallMaterial); rightWall.position.set(15, 6, 0); rightWall.receiveShadow = true; scene.add(rightWall); const ceiling = new THREE.Mesh(new THREE.PlaneGeometry(30, 25), new THREE.MeshStandardMaterial({ color: 0xFFFFFF, roughness: 0.7 })); ceiling.rotation.x = Math.PI / 2; ceiling.position.y = 12; ceiling.receiveShadow = true; scene.add(ceiling); const blackboard = new THREE.Mesh(new THREE.BoxGeometry(10, 4, 0.2), new THREE.MeshStandardMaterial({ color: 0x1a1a1a })); blackboard.position.set(0, 6, -12.3); scene.add(blackboard); const windowMaterial = new THREE.MeshStandardMaterial({ color: 0xADD8E6, transparent: true, opacity: 0.5 }); for (let i = 0; i < 3; i++) { const windowZ = -6 + i * 6; const frame = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.2, 2.7), new THREE.MeshStandardMaterial({ color: 0x654321 })); frame.position.set(14.9, 7, windowZ); scene.add(frame); const pane = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3, 2.6), windowMaterial); pane.position.set(14.85, 7, windowZ); scene.add(pane); } const door = new THREE.Mesh(new THREE.BoxGeometry(0.2, 8, 3), new THREE.MeshStandardMaterial({ color: 0x8B4513 })); door.position.set(-14.9, 4, 10); scene.add(door); }
-        function createFan(position) { const fan = new THREE.Group(); const fanBase = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16), new THREE.MeshStandardMaterial({ color: 0x444444 })); fan.add(fanBase); for (let i = 0; i < 4; i++) { const blade = new THREE.Mesh(new THREE.BoxGeometry(3, 0.1, 0.5), new THREE.MeshStandardMaterial({ color: 0x666666 })); blade.rotation.y = (Math.PI / 2) * i; blade.position.y = -0.3; fan.add(blade); } fan.position.copy(position); return fan; }
+        function createFan(position) { const fan = new THREE.Group(); const fanBase = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.4, 0.5, 16), new THREE.MeshStandardMaterial({ color: 0x444444 })); fan.add(fanBase); for (let i = 0; i < 4; i++) { const blade = new THREE.Mesh(new THREE.BoxGeometry(3, 0.1, 0.5), new THREE.MeshStandardMaterial({ color: 0x666666 })); blade.rotation.y = (Math.PI / 2) * i; blade.position.y = -0.3; blade.castShadow = true; fan.add(blade); } fan.position.copy(position); return fan; }
         function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[array[i], array[j]] = [array[j], array[i]]; } }
         function updateSensors() { const temperature = (20 + Math.random() * 10).toFixed(1); const lightLevel = Math.floor(200 + Math.random() * 800); document.getElementById('temperature').textContent = temperature + '°C'; document.getElementById('lightLevel').textContent = lightLevel; document.getElementById('humidity').textContent = Math.floor(35 + Math.random() * 25) + '%'; if (autoMode) { shuffleArray(allStudents); const randomOccupancy = Math.floor(Math.random() * (allStudents.length + 1)); for (const k in zones) zones[k].occupancy = 0; allStudents.forEach(s => s.visible = false); for (let i = 0; i < randomOccupancy; i++) { allStudents[i].visible = true; } clickableObjects.forEach(obj => { if (obj.userData.student) { const student = obj.userData.student; if (student.visible) { const zoneKey = obj.userData.zone; zones[zoneKey].occupancy++; } } }); runAutoLogic(); } else if (simulationMode) { runAutoLogic(); } }
         function onWindowResize() { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight); }
         function toggleAutoMode() { autoMode = !autoMode; if (autoMode) { simulationMode = false; } updateModeUI(); }
         function toggleSimulationMode() { simulationMode = !simulationMode; if (simulationMode) { autoMode = false; } updateModeUI(); }
         function updateModeUI() { document.getElementById('autoStatus').className = autoMode ? 'status status-on' : 'status status-off'; document.getElementById('simStatus').className = simulationMode ? 'status status-on' : 'status status-off'; if (simulationMode) { document.getElementById('systemStatus').textContent = 'MANUAL TEST'; document.getElementById('instructions').textContent = '🖱️ Click on desks to add/remove students.'; } else if (autoMode) { document.getElementById('systemStatus').textContent = 'AUTO MODE'; document.getElementById('instructions').textContent = '🤖 Simulation is running automatically...'; } else { document.getElementById('systemStatus').textContent = 'MANUAL'; setView(document.querySelector('.view-btn.active').id.replace('btn-', '')); } if (!autoMode && !simulationMode) { allStudents.forEach(s => s.visible = false); for (const k in zones) zones[k].occupancy = 0; runAutoLogic(); } }
+
 
         init();
     </script>
