@@ -234,16 +234,16 @@ def simulate_data():
 
 if __name__ == '__main__':
     print("=" * 70)
-    print("🚀 Smart Energy TinyML Dashboard with Temperature Monitoring")
+    print("Smart Energy TinyML Dashboard with Temperature Monitoring")
     print("=" * 70)
-    print("📡 Server accessible at:")
+    print("Server accessible at:")
     print("   - Home Page: http://127.0.0.1:5001")
     print("   - Dashboard: http://127.0.0.1:5001/dashboard")
     print("   - Classroom Simulation: http://127.0.0.1:5001/classroom_simulation")
     print("   - Network: http://YOUR_IP:5001")
     print("=" * 70)
-    print("🧪 Test without hardware: http://127.0.0.1:5001/simulate?count=20")
-    print("📊 Waiting for ESP32 sensor data...")
+    print("Test without hardware: http://127.0.0.1:5001/simulate?count=20")
+    print("Waiting for ESP32 sensor data...")
     print("=" * 70)
     
     app.run(host='0.0.0.0', port=5001, debug=True)

@@ -339,7 +339,7 @@ best_idx = results_df['F1-Score'].idxmax()
 best_model = results_df.loc[best_idx, 'Model']
 best_f1 = results_df.loc[best_idx, 'F1-Score']
 
-print(f"\n🏆 BEST MODEL: {best_model}")
+print(f"\nBEST MODEL: {best_model}")
 print(f"   F1-Score: {best_f1:.4f}")
 print(f"   Accuracy: {results_df.loc[best_idx, 'Accuracy']:.4f}")
 print(f"   ROC-AUC: {results_df.loc[best_idx, 'ROC-AUC']:.4f}")

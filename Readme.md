@@ -62,4 +62,4 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 - Scikit-learn
 - TensorFlow
 - Seaborn
-
+- pickle 
