@@ -39,14 +39,15 @@ A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, 
 
 ## Technology Stack
 
+**Programming Language:**
+- Python
+- Javascript
+
 **Backend:**
-- Python 3.8+
 - Flask (Web Framework)
 
 **Frontend:**
 - HTML5 / CSS3
-- JavaScript (ES6+)
-- Chart.js 4.4.0
 
 **Hardware:**
 - ESP32 Microcontroller
