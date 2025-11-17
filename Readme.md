@@ -135,16 +135,21 @@ Run the system without physical hardware using built-in sensor simulation for te
 
 ---
 
-## Contributing
-
-Contributions are welcome! Please ensure your code follows the existing structure and includes appropriate documentation.
-
----
-
 ## MIT License
 
 This project is available for educational and research purposes.
 
 ---
 
+## Patent Information
+
+**Patent Status**: Patent Pending
+
+This project contains proprietary technology and methodologies for which a patent application has been filed. All intellectual property rights related to the Smart Energy Optimization System using TinyML are protected under applicable patent laws.
+
+**Important Notice**: Unauthorized use, reproduction, or distribution of the patented technology may constitute patent infringement and is subject to legal action.
+
+For licensing inquiries or commercial use, please contact the project maintainers.
+
+---
 
