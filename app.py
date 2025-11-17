@@ -4,7 +4,9 @@ import numpy as np
 import pandas as pd
 import os
 import math
+import time
 
+# Try to import TensorFlow for the AI Model
 try:
     import tensorflow as tf
     print(f"TensorFlow: {tf.__version__}")
@@ -14,6 +16,7 @@ except Exception as e:
 
 app = Flask(__name__)
 
+# --- DATA MANAGEMENT ---
 class DataStore:
     def __init__(self):
         self.timestamps = []
@@ -24,50 +27,45 @@ class DataStore:
         self.temperature_values = []  
         self.total_energy = 0.0
         self.lights_prevented = 0
+        
+        # Current Real-Time State
         self.current_pir = 0
         self.current_ldr = 0
         self.current_temp = 0.0  
-        self.current_prediction = "Waiting for data..."
+        self.current_prediction = "Waiting..."
+        self.current_fan_status = "OFF" # NEW: Track Fan Status
+        
+        # Stats
         self.max_temp = 0.0  
         self.min_temp = 100.0
-        self.light_history = []
-        self.temp_history = []
         self.prediction_count = 0
         
+        # History for Features
+        self.light_history = []
+        self.temp_history = []
+        
+        # SYNC LOGIC: Track when the user last manually touched the simulation
+        self.last_manual_input_time = 0 
+        
+        # Curated scenarios (Auto Mode Data)
         self.demo_scenarios = [
-            # Scenario 1: Motion + Dark (Model should predict ON)
-            {'pir': 1, 'ldr': 200, 'temp': 24.0, 'description': 'Motion + Dark'},
-            
-            # Scenario 2: No Motion (Model should predict OFF)
-            {'pir': 0, 'ldr': 350, 'temp': 25.0, 'description': 'No Motion'},
-            
-            # Scenario 3: Motion + Very Bright (Model should predict OFF)
-            {'pir': 1, 'ldr': 850, 'temp': 26.0, 'description': 'Motion + Bright'},
-            
-            # Scenario 4: Motion + Low Light (Model should predict ON)
-            {'pir': 1, 'ldr': 250, 'temp': 23.5, 'description': 'Motion + Low Light'},
-            
-            # Scenario 5: No Motion + Medium Light (Model should predict OFF)
-            {'pir': 0, 'ldr': 450, 'temp': 24.5, 'description': 'No Motion + Medium'},
-            
-            # Scenario 6: Motion + Dark + Hot (Model decides: probably OFF due to heat)
-            {'pir': 1, 'ldr': 280, 'temp': 37.5, 'description': 'Motion + Hot'},
-            
-            # Scenario 7: Motion + Very Dark (Model should predict ON)
-            {'pir': 1, 'ldr': 150, 'temp': 24.0, 'description': 'Motion + Very Dark'},
-            
-            # Scenario 8: No Motion + Dark (Model should predict OFF)
-            {'pir': 0, 'ldr': 200, 'temp': 23.0, 'description': 'No Motion + Dark'},
+            {'pir': 1, 'ldr': 200, 'temp': 24.0, 'description': 'Auto: Motion + Dark'},
+            {'pir': 0, 'ldr': 350, 'temp': 25.0, 'description': 'Auto: No Motion'},
+            {'pir': 1, 'ldr': 850, 'temp': 26.0, 'description': 'Auto: Motion + Bright'},
+            {'pir': 1, 'ldr': 250, 'temp': 23.5, 'description': 'Auto: Motion + Low Light'},
+            {'pir': 0, 'ldr': 450, 'temp': 24.5, 'description': 'Auto: No Motion + Medium'},
+            {'pir': 1, 'ldr': 280, 'temp': 37.5, 'description': 'Auto: Motion + Hot'},
+            {'pir': 1, 'ldr': 150, 'temp': 24.0, 'description': 'Auto: Motion + Very Dark'},
+            {'pir': 0, 'ldr': 200, 'temp': 23.0, 'description': 'Auto: No Motion + Dark'},
         ]
-        self.scenario_index = 0
     
-    def get_next_scenario(self):
-        """Get next curated scenario"""
-        scenario = self.demo_scenarios[self.scenario_index % len(self.demo_scenarios)]
-        self.scenario_index += 1
-        return scenario
+    def get_auto_scenario(self):
+        # Change scenario every 5 seconds
+        interval = 5 
+        current_index = int(time.time() / interval) % len(self.demo_scenarios)
+        return self.demo_scenarios[current_index]
     
-    def add_data(self, timestamp, pir, ldr, temp, prediction, energy):  
+    def add_data(self, timestamp, pir, ldr, temp, prediction, fan_status, energy):  
         self.timestamps.append(timestamp)
         self.pir_values.append(pir)
         self.ldr_values.append(ldr)
@@ -78,16 +76,11 @@ class DataStore:
         
         self.light_history.append(ldr)
         self.temp_history.append(temp)
+        if len(self.light_history) > 5: self.light_history.pop(0)
+        if len(self.temp_history) > 5: self.temp_history.pop(0)
         
-        if len(self.light_history) > 5:
-            self.light_history.pop(0)
-        if len(self.temp_history) > 5:
-            self.temp_history.pop(0)
-        
-        if temp > self.max_temp:
-            self.max_temp = temp
-        if temp < self.min_temp:
-            self.min_temp = temp
+        if temp > self.max_temp: self.max_temp = temp
+        if temp < self.min_temp: self.min_temp = temp
         
         if len(self.timestamps) > 20:
             self.timestamps.pop(0)
@@ -97,17 +90,18 @@ class DataStore:
             self.predictions.pop(0)
             self.energy_saved.pop(0)
     
-    def update_current(self, pir, ldr, temp, prediction):  
+    def update_current(self, pir, ldr, temp, prediction, fan_status):  
         self.current_pir = pir
         self.current_ldr = ldr
         self.current_temp = temp  
         self.current_prediction = prediction
+        self.current_fan_status = fan_status # Update Fan
 
 data_store = DataStore()
 
+# --- MODEL LOADING ---
 def load_tinyml_model():
-    if tf is None:
-        return None
+    if tf is None: return None
     try:
         print("\n" + "="*60)
         print("LOADING YOUR FNN MODEL")
@@ -119,22 +113,20 @@ def load_tinyml_model():
         model = tf.keras.models.load_model(model_path)
         print("YOUR FNN MODEL LOADED!")
         print(f"   Input shape: {model.input_shape}")
-        print(f"   Output shape: {model.output_shape}")
-        print(f"   Accuracy: 98%")
+        print("   Status: Ready for Inference")
         print("="*60 + "\n")
         return model
     except Exception as e:
-        print(f"ERROR: {e}")
+        print(f"ERROR LOADING MODEL: {e}")
         return None
 
 model = load_tinyml_model()
 
+# --- FEATURE ENGINEERING ---
 def create_engineered_features(pir, ldr, temperature):
-    """Create 8 engineered features for your FNN model"""
     pir = float(pir)
     ldr = float(ldr)
     temp = float(temperature)
-    
     current_hour = datetime.now().hour
     hour_sin = math.sin(2 * math.pi * current_hour / 24)
     
@@ -154,87 +146,95 @@ def create_engineered_features(pir, ldr, temperature):
     
     return [temp, ldr, pir, light_mean_3, temp_mean_3, light_diff_3, temp_diff_3, hour_sin]
 
+def manual_scaler(features):
+    temp, ldr, pir, l_mean, t_mean, l_diff, t_diff, hour = features
+    s_temp = (temp - 0) / (50 - 0)
+    s_ldr = (ldr - 0) / (1000 - 0)
+    s_pir = pir
+    s_l_mean = (l_mean - 0) / (1000 - 0)
+    s_t_mean = (t_mean - 0) / (50 - 0)
+    s_l_diff = (l_diff + 500) / (1000)
+    s_t_diff = (t_diff + 10) / (20)
+    s_hour = (hour + 1) / 2
+    return [s_temp, s_ldr, s_pir, s_l_mean, s_t_mean, s_l_diff, s_t_diff, s_hour]
+
+# --- PREDICTION LOGIC ---
 def neural_network_predict(pir, ldr, temperature):  
-    """PRODUCTION: Model detects occupancy, Smart logic decides light control"""
-    
     if model is None:
-        if pir == 1 and ldr < 500:
-            return 'Light ON' if temperature <= 35 else 'Light OFF (Heat)'
-        elif pir == 1 and ldr >= 500:
-            return 'Light OFF (Bright)'
-        else:
-            return 'Light OFF (No Motion)'
-    
+        if pir == 1 and ldr < 500: return 'Light ON' if temperature <= 35 else 'Light OFF (Heat)'
+        elif pir == 1 and ldr >= 500: return 'Light OFF (Bright)'
+        else: return 'Light OFF (No Motion)'
     try:
         data_store.prediction_count += 1
-        features = create_engineered_features(pir, ldr, temperature)
-        input_data = np.array([features], dtype=np.float32)
+        raw_features = create_engineered_features(pir, ldr, temperature)
+        scaled_features = manual_scaler(raw_features)
+        input_data = np.array([scaled_features], dtype=np.float32)
+        prediction_prob = model.predict(input_data, verbose=0)[0][0]
+        is_occupied = prediction_prob > 0.5
         
-        prediction = model.predict(input_data, verbose=0)
-        predicted_value = float(prediction[0][0])
-        occupancy_detected = 1 if predicted_value > 0.5 else 0
+        print(f"\n--- FNN Inference #{data_store.prediction_count} ---")
+        print(f"Inputs: PIR={pir}, Lux={ldr}, Temp={temperature}")
+        print(f"Model Probability: {prediction_prob:.4f} ({'Occupied' if is_occupied else 'Empty'})")
         
-        print(f"\nPrediction #{data_store.prediction_count}:")
-        print(f"   Inputs: PIR={pir}, Light={ldr:.0f}lux, Temp={temperature:.1f}°C")
-        print(f"   Model Occupancy Detection: {predicted_value:.4f} → {'OCCUPIED' if occupancy_detected else 'EMPTY'}")
-        
-        if occupancy_detected == 0 or pir == 0:
+        if not is_occupied:
             decision = 'Light OFF (No Motion)'
-            reason = "Room is empty"
-        
+            reason = "Model detected room empty"
         elif ldr >= 600:
             decision = 'Light OFF (Bright)'
-            reason = f"Sufficient light ({ldr:.0f}lux)"
-        
+            reason = "Occupied, but natural light is sufficient"
         elif temperature > 35:
             decision = 'Light OFF (Heat)'
-            reason = f"Temperature too high ({temperature:.1f}°C)"
-        
-        elif ldr < 600 and temperature <= 35:
-            decision = 'Light ON'
-            reason = f"Occupancy + Low light ({ldr:.0f}lux)"
-        
+            reason = "Occupied, but turning off to reduce heat"
         else:
-            decision = 'Light OFF'
-            reason = "Energy optimization"
-        
-        print(f"Light Decision: {decision}")
-        print(f"Reason: {reason}\n")
-        
+            decision = 'Light ON'
+            reason = "Model detected Occupancy + Low Light"
+            
+        print(f"Decision: {decision} | Reason: {reason}\n")
         return decision
-                
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"Prediction Error: {e}")
         return 'Light OFF (Error)'
 
-def calculate_energy_savings(prediction, pir, ldr, temperature): 
-    energy_per_second = (60 / 1000) / 3600
+def get_fan_status(light_decision, temperature):
+    """Determine Fan Status based on Occupancy and Temperature"""
+    # If decision contains "No Motion", room is empty -> Fan OFF
+    if "No Motion" in light_decision:
+        return "Fan OFF"
+    
+    # If room is occupied (any other decision) AND Temp > 25
+    if temperature > 25.0:
+        return "Fan ON"
+    
+    return "Fan OFF"
+
+def calculate_energy_savings(prediction, fan_status, pir, ldr, temperature): 
+    energy_per_second = (60 / 1000) / 3600 
     measurement_interval = 5
     
+    savings = 0.0
     if ldr > 500 and 'OFF' in prediction and pir == 1:
         data_store.lights_prevented += 1
-        return energy_per_second * measurement_interval
+        savings += energy_per_second * measurement_interval
     
     if temperature > 35 and 'Heat' in prediction:
         data_store.lights_prevented += 1
-        return energy_per_second * measurement_interval * 1.2
+        savings += energy_per_second * measurement_interval * 1.2
     
     if pir == 0 and 'OFF' in prediction:
-        return energy_per_second * measurement_interval * 0.5
-    
-    return 0.0
+        savings += energy_per_second * measurement_interval * 0.5
+        
+    return savings
+
+# --- FLASK ROUTES ---
 
 @app.route('/')
-def home():
-    return render_template('home.html')
+def home(): return render_template('home.html')
 
 @app.route('/dashboard')
-def index():
-    return render_template('index.html')
+def index(): return render_template('index.html')
 
 @app.route('/classroom_simulation')
-def classroom_simulation():
-    return render_template('classroom_simulation.html')
+def classroom_simulation(): return render_template('classroom_simulation.html')
 
 @app.route('/model_info')
 def model_info():
@@ -245,60 +245,72 @@ def model_info():
             'accuracy': '98%',
             'predictions_made': data_store.prediction_count,
             'using_real_model': True,
-            'message': 'Real FNN Model with Curated Scenarios'
+            'message': 'Active: FNN Model'
         })
     return jsonify({'model_loaded': False})
 
 @app.route('/update', methods=['POST'])
 def update_data():
-    """ESP32 endpoint"""
     try:
         data = request.json
         pir_value = int(data.get('pir', 0))
         ldr_value = float(data.get('ldr', 0))
         temp_value = float(data.get('temperature', 25.0))
         
+        data_store.last_manual_input_time = time.time()
+        
         prediction = neural_network_predict(pir_value, ldr_value, temp_value)
-        energy_saved = calculate_energy_savings(prediction, pir_value, ldr_value, temp_value)
+        fan_status = get_fan_status(prediction, temp_value)
+        energy_saved = calculate_energy_savings(prediction, fan_status, pir_value, ldr_value, temp_value)
         
         timestamp = datetime.now().strftime('%H:%M:%S')
-        data_store.add_data(timestamp, pir_value, ldr_value, temp_value, prediction, energy_saved)
-        data_store.update_current(pir_value, ldr_value, temp_value, prediction)
+        data_store.add_data(timestamp, pir_value, ldr_value, temp_value, prediction, fan_status, energy_saved)
+        data_store.update_current(pir_value, ldr_value, temp_value, prediction, fan_status)
         
-        return jsonify({'success': True, 'prediction': prediction})
+        return jsonify({'success': True, 'prediction': prediction, 'fan_status': fan_status})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 400
 
 @app.route('/get_prediction')
 def get_prediction():
-    """Curated scenarios + YOUR REAL FNN MODEL predictions"""
     try:
-        scenario = data_store.get_next_scenario()
-        pir_value = scenario['pir']
-        ldr_value = scenario['ldr']
-        temp_value = scenario['temp']
-        description = scenario['description']
+        current_time = time.time()
+        time_since_input = current_time - data_store.last_manual_input_time
         
-        prediction = neural_network_predict(pir_value, ldr_value, temp_value)
-        energy_saved = calculate_energy_savings(prediction, pir_value, ldr_value, temp_value)
-        
-        timestamp = datetime.now().strftime('%H:%M:%S')
-        data_store.add_data(timestamp, pir_value, ldr_value, temp_value, prediction, energy_saved)
-        data_store.update_current(pir_value, ldr_value, temp_value, prediction)
+        if time_since_input < 5.0:
+            # Manual Mode
+            pir_value = data_store.current_pir
+            ldr_value = data_store.current_ldr
+            temp_value = data_store.current_temp
+            description = "Manual / Simulation Input"
+            prediction = data_store.current_prediction
+            fan_status = data_store.current_fan_status
+        else:
+            # Auto Mode
+            scenario = data_store.get_auto_scenario()
+            pir_value = scenario['pir']
+            ldr_value = scenario['ldr']
+            temp_value = scenario['temp']
+            description = scenario['description']
+            
+            prediction = neural_network_predict(pir_value, ldr_value, temp_value)
+            fan_status = get_fan_status(prediction, temp_value)
+            energy_saved = calculate_energy_savings(prediction, fan_status, pir_value, ldr_value, temp_value)
+            
+            timestamp = datetime.now().strftime('%H:%M:%S')
+            data_store.add_data(timestamp, pir_value, ldr_value, temp_value, prediction, fan_status, energy_saved)
+            data_store.update_current(pir_value, ldr_value, temp_value, prediction, fan_status)
         
         co2_saved = data_store.total_energy * 0.5
         cost_saved = data_store.total_energy * 0.12
-        
-        if len(data_store.temperature_values) > 0:
-            avg_temp = sum(data_store.temperature_values) / len(data_store.temperature_values)
-        else:
-            avg_temp = 0.0
+        avg_temp = sum(data_store.temperature_values) / len(data_store.temperature_values) if data_store.temperature_values else 0.0
         
         return jsonify({
             'pir': data_store.current_pir,
             'ldr': round(data_store.current_ldr, 1),
             'temperature': round(data_store.current_temp, 1),
             'prediction': data_store.current_prediction,
+            'fan_status': data_store.current_fan_status,  # Added Fan Status to JSON
             'scenario': description,
             'energy_saved': round(data_store.total_energy, 3),
             'lights_prevented': data_store.lights_prevented,
@@ -317,29 +329,11 @@ def get_prediction():
         })
     except Exception as e:
         print(f"Error: {e}")
-        import traceback
-        traceback.print_exc()
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     print("\n" + "="*70)
-    print("SMART ENERGY TINYML DASHBOARD")
+    print("SMART ENERGY TINYML DASHBOARD - SERVER STARTED")
     print("="*70)
-    
-    if model is not None:
-        print("YOUR FNN MODEL: LOADED & ACTIVE")
-        print("Real neural network predictions")
-        print("98% Test Accuracy")
-        print("Using curated scenarios for diverse results")
-    else:
-        print("Model not loaded")
-    
-    print("\nDashboard: http://127.0.0.1:5001/dashboard")
-    print("\n8 Curated Scenarios cycling through:")
-    for i, scenario in enumerate(data_store.demo_scenarios, 1):
-        print(f"   {i}. {scenario['description']}: PIR={scenario['pir']}, Light={scenario['ldr']}, Temp={scenario['temp']}°C")
-    
-    print("\nYOUR FNN MODEL will decide the actual predictions!")
-    print("="*70 + "\n")
-    
+    print(" [OK] Smart Sync Enabled: Manual Inputs override Auto Scenarios")
     app.run(host='0.0.0.0', port=5001, debug=True)

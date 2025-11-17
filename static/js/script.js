@@ -24,7 +24,7 @@ const manualRefreshBtn = document.getElementById('manualRefresh');
 let modelStatus = {
     loaded: false,
     accuracy: 'Unknown',
-    type: 'Unknown'
+    type: 'OCCUPANCY_FNN_MODEL.H5'
 };
 
 async function checkModelStatus() {
@@ -36,17 +36,14 @@ async function checkModelStatus() {
         modelStatus = {
             loaded: data.model_loaded,
             accuracy: data.accuracy || '98%',
-            type: data.model_name || 'TinyML Model'
+            type: data.model_name || 'OCCUPANCY_FNN_MODEL.H5'
         };
         
         console.log('AI Model Status:', modelStatus);
         
         if (modelStatus.loaded) {
-            console.log('Model loaded successfully!');
-            console.log('Model Accuracy:', modelStatus.accuracy);
             updateStatus(true, 'AI Model Active');
         } else {
-            console.warn('Model not loaded - using fallback logic');
             updateStatus(true, 'Fallback Mode Active');
         }
     } catch (error) {
@@ -55,7 +52,6 @@ async function checkModelStatus() {
     }
 }
 
-// Initialize Charts
 function initCharts() {
     const energyCtx = document.getElementById('energyChart').getContext('2d');
     energyChart = new Chart(energyCtx, {
@@ -81,12 +77,7 @@ function initCharts() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    labels: { 
-                        color: '#fff', 
-                        font: { size: 13, weight: '600' }
-                    }
-                },
+                legend: { labels: { color: '#fff', font: { size: 13, weight: '600' } } },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
                     padding: 12,
@@ -94,32 +85,17 @@ function initCharts() {
                     bodyColor: '#fff',
                     borderColor: '#10b981',
                     borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            return `Energy Saved: ${context.parsed.y.toFixed(3)} kWh`;
-                        }
-                    }
+                    callbacks: { label: function(context) { return `Energy Saved: ${context.parsed.y.toFixed(3)} kWh`; } }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: { 
-                        color: '#fff',
-                        font: { size: 11 },
-                        callback: function(value) {
-                            return value.toFixed(3);
-                        }
-                    },
+                    ticks: { color: '#fff', font: { size: 11 }, callback: function(value) { return value.toFixed(3); } },
                     grid: { color: 'rgba(255, 255, 255, 0.1)' }
                 },
                 x: {
-                    ticks: { 
-                        color: '#fff',
-                        font: { size: 10 },
-                        maxRotation: 45, 
-                        minRotation: 45 
-                    },
+                    ticks: { color: '#fff', font: { size: 10 }, maxRotation: 45, minRotation: 45 },
                     grid: { color: 'rgba(255, 255, 255, 0.05)' }
                 }
             }
@@ -150,12 +126,7 @@ function initCharts() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    labels: { 
-                        color: '#fff', 
-                        font: { size: 13, weight: '600' }
-                    }
-                },
+                legend: { labels: { color: '#fff', font: { size: 13, weight: '600' } } },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
                     padding: 12,
@@ -163,35 +134,18 @@ function initCharts() {
                     bodyColor: '#fff',
                     borderColor: '#ff6b6b',
                     borderWidth: 1,
-                    callbacks: {
-                        label: function(context) {
-                            return `Temperature: ${context.parsed.y.toFixed(1)}°C`;
-                        }
-                    }
+                    callbacks: { label: function(context) { return `Temperature: ${context.parsed.y.toFixed(1)}°C`; } }
                 }
             },
             scales: {
                 y: {
                     beginAtZero: false,
-                    min: 15,  
-                    max: 40,  
-                    ticks: { 
-                        color: '#fff',
-                        font: { size: 11 },
-                        stepSize: 5,
-                        callback: function(value) {
-                            return value + '°C';
-                        }
-                    },
+                    min: 15, max: 40,
+                    ticks: { color: '#fff', font: { size: 11 }, stepSize: 5, callback: function(value) { return value + '°C'; } },
                     grid: { color: 'rgba(255, 255, 255, 0.1)' }
                 },
                 x: {
-                    ticks: { 
-                        color: '#fff',
-                        font: { size: 10 },
-                        maxRotation: 45, 
-                        minRotation: 45 
-                    },
+                    ticks: { color: '#fff', font: { size: 10 }, maxRotation: 45, minRotation: 45 },
                     grid: { color: 'rgba(255, 255, 255, 0.05)' }
                 }
             }
@@ -222,12 +176,7 @@ function initCharts() {
             responsive: true,
             maintainAspectRatio: false,
             plugins: {
-                legend: {
-                    labels: { 
-                        color: '#fff', 
-                        font: { size: 13, weight: '600' }
-                    }
-                },
+                legend: { labels: { color: '#fff', font: { size: 13, weight: '600' } } },
                 tooltip: {
                     backgroundColor: 'rgba(0, 0, 0, 0.8)',
                     padding: 12,
@@ -247,23 +196,11 @@ function initCharts() {
                 y: {
                     beginAtZero: true,
                     max: 1,
-                    ticks: { 
-                        color: '#fff',
-                        font: { size: 11 },
-                        stepSize: 1,
-                        callback: function(value) {
-                            return value === 1 ? 'ON' : 'OFF';
-                        }
-                    },
+                    ticks: { color: '#fff', font: { size: 11 }, stepSize: 1, callback: function(value) { return value === 1 ? 'ON' : 'OFF'; } },
                     grid: { color: 'rgba(255, 255, 255, 0.1)' }
                 },
                 x: {
-                    ticks: { 
-                        color: '#fff',
-                        font: { size: 10 },
-                        maxRotation: 45, 
-                        minRotation: 45 
-                    },
+                    ticks: { color: '#fff', font: { size: 10 }, maxRotation: 45, minRotation: 45 },
                     grid: { color: 'rgba(255, 255, 255, 0.05)' }
                 }
             }
@@ -284,53 +221,74 @@ function updateStatus(connected, message = '') {
     }
 }
 
-function displayPrediction(prediction) {
-    let icon, color, message, subtitle;
+// --- UPDATED DISPLAY LOGIC: MATCHING SCREENSHOT FOOTER STYLE ---
+function displayPrediction(prediction, fanStatus) {
+    // Logic for Text Content
+    let lightMessage = prediction.includes('Light ON') ? 'LIGHT ON' : 'LIGHT OFF';
+    let fanMessage = fanStatus === 'Fan ON' ? 'FAN ON' : 'FAN OFF';
     
-    if (prediction.includes('Light ON')) {
-        icon = '';
-        color = '#10b981';
-        message = 'LIGHT ON';
-        subtitle = 'AI detected motion with low ambient light';
-    } else if (prediction.includes('Bright')) {
-        icon = '';
-        color = '#fbbf24';
-        message = 'LIGHT OFF';
-        subtitle = 'Sufficient ambient brightness detected';
-    } else if (prediction.includes('Heat')) {
-        icon = '';
-        color = '#f87171';
-        message = 'LIGHT OFF';
-        subtitle = 'High temperature - reducing heat generation';
-    } else if (prediction.includes('No Motion')) {
-        icon = '';
-        color = '#9ca3af';
-        message = 'LIGHT OFF';
-        subtitle = 'No motion detected in the area';
-    } else {
-        icon = '';
-        color = '#6366f1';
-        message = prediction;
-        subtitle = 'AI prediction in progress...';
-    }
-    
+    // Logic for Static Visuals
+    const staticMainColor = '#fbbf24'; // Warm Yellow for Status
+
     resultDiv.innerHTML = `
-        <div style="display: flex; flex-direction: column; align-items: center; gap: 15px;">
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <span style="font-size: 3em;">${icon}</span>
-                <div>
-                    <div style="color: ${color}; font-weight: bold; font-size: 1.5em;">
-                        ${message}
-                    </div>
-                    <div style="color: #cbd5e1; font-size: 0.9em; margin-top: 5px;">
-                        ${subtitle}
+        <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
+            
+            <!-- Header Label -->
+            <div style="color: #fff; font-size: 0.9em; font-weight: 600; margin-bottom: 15px; opacity: 0.9;">
+                🎯 Current AI Decisions (Light & Fan)
+            </div>
+
+            <!-- Main Status Area: Side by Side -->
+            <div style="display: flex; flex-direction: row; justify-content: center; gap: 40px; width: 100%; margin-bottom: 25px; align-items: center;">
+                
+                <!-- Light Section -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2em;">💡</span>
+                    <div style="color: ${staticMainColor}; font-weight: 700; font-size: 1.3em; text-transform: uppercase; letter-spacing: 1px;">
+                        ${lightMessage}
                     </div>
                 </div>
+
+                <!-- Vertical Divider -->
+                <div style="width: 2px; height: 25px; background: rgba(255,255,255,0.1);"></div>
+
+                <!-- Fan Section -->
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 1.2em;">💨</span>
+                    <div style="color: ${staticMainColor}; font-weight: 700; font-size: 1.3em; text-transform: uppercase; letter-spacing: 1px;">
+                        ${fanMessage}
+                    </div>
+                </div>
+
             </div>
-            <div style="background: rgba(255, 255, 255, 0.1); padding: 10px 20px; border-radius: 8px; font-size: 0.85em;">
-                <span style="color: #10b981;">🤖 ${modelStatus.type}</span> | 
-                <span style="color: #fbbf24;">📊 Accuracy: ${modelStatus.accuracy}</span> | 
-                <span style="color: #6366f1;">⚡ TinyML Powered</span>
+
+            <!-- Footer Bar: Styled exactly like the screenshot -->
+            <div style="background: rgba(255, 255, 255, 0.15); padding: 15px 20px; border-radius: 12px; width: 95%; backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.05);">
+                
+                <!-- Row 1: Model Name (Left) & Accuracy (Right) -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%;">
+                    
+                    <!-- Left: Model Name (Green) -->
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                        <span style="font-size: 1.4em;">🤖</span>
+                        <div style="color: #2ecc71; font-weight: 800; font-size: 0.95em; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                            ${modelStatus.type}
+                        </div>
+                    </div>
+
+                    <!-- Right: Accuracy (Yellow Label, White Value) -->
+                    <div style="text-align: right; min-width: 80px;">
+                        <div style="color: #facc15; font-weight: 800; font-size: 0.75em; letter-spacing: 1px; text-transform: uppercase;">ACCURACY</div>
+                        <div style="color: #ffffff; font-weight: 800; font-size: 1.4em; line-height: 1;">${modelStatus.accuracy}</div>
+                    </div>
+                </div>
+
+                <!-- Row 2: TinyML Powered (Centered, Blue) -->
+                <div style="display: flex; justify-content: center; align-items: center; gap: 6px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 8px;">
+                    <span style="font-size: 0.9em; color: #fbbf24;">⚡</span>
+                    <span style="color: #818cf8; font-weight: 800; font-size: 0.85em; letter-spacing: 1.5px; text-transform: uppercase;">TINYML POWERED</span>
+                </div>
+
             </div>
         </div>
     `;
@@ -342,14 +300,6 @@ async function updateDashboard() {
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
         
         const data = await response.json();
-        
-        console.log('AI Prediction Data:', {
-            pir: data.pir,
-            ldr: data.ldr,
-            temp: data.temperature,
-            prediction: data.prediction,
-            model_active: modelStatus.loaded
-        });
         
         if (pirValue.textContent !== String(data.pir)) {
             pirValue.textContent = data.pir;
@@ -378,7 +328,7 @@ async function updateDashboard() {
         maxTemp.textContent = `${data.max_temperature}°C`;
         minTemp.textContent = `${data.min_temperature}°C`;
         
-        displayPrediction(data.prediction);
+        displayPrediction(data.prediction, data.fan_status);
         
         if (data.chart_data && data.chart_data.timestamps.length > 0) {
             energyChart.data.labels = data.chart_data.timestamps;
@@ -392,8 +342,6 @@ async function updateDashboard() {
             predictionChart.data.labels = data.chart_data.timestamps;
             predictionChart.data.datasets[0].data = data.chart_data.predictions;
             predictionChart.update('none');
-            
-            console.log('Charts updated with AI decisions');
         }
         
         updateStatus(true);
@@ -403,7 +351,7 @@ async function updateDashboard() {
         updateStatus(false);
         resultDiv.innerHTML = `
             <div style="color: #ef4444; text-align: center;">
-                <div style="font-size: 2em;"></div>
+                <div style="font-size: 2em;">⚠️</div>
                 <div style="font-weight: bold; margin-top: 10px;">Connection Error</div>
                 <div style="font-size: 0.9em; margin-top: 5px;">Unable to fetch AI predictions</div>
             </div>
