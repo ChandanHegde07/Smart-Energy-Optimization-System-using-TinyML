@@ -124,17 +124,6 @@ Run the system without physical hardware using built-in sensor simulation for te
 
 ---
 
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/` | GET | Main dashboard interface |
-| `/api/sensor-data` | GET | Retrieve current sensor readings |
-| `/api/energy-stats` | GET | Fetch energy analytics |
-| `/api/ml-decision` | POST | Get ML model prediction |
-
----
-
 ## MIT License
 
 This project is available for educational and research purposes.
@@ -151,5 +140,4 @@ This project contains proprietary technology and methodologies for which a paten
 
 For licensing inquiries or commercial use, please contact the project maintainers.
 
----
 
