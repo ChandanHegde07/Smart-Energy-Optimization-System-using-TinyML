@@ -10,7 +10,7 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>⚡ Smart Energy TinyML Dashboard</h1>
+            <h1>Smart Energy TinyML Dashboard</h1>
             <div class="status-indicator">
                 <span class="status-dot" id="statusDot"></span>
                 <span id="statusText">Connecting...</span>
@@ -65,35 +65,35 @@
 
         <div class="charts-row">
             <div class="chart-container half-width">
-                <h2>📈 Energy Savings Over Time</h2>
+                <h2>Energy Savings Over Time</h2>
                 <div class="chart-wrapper">
                     <canvas id="energyChart"></canvas>
                 </div>
             </div>
             <div class="chart-container half-width">
-                <h2>🌡️ Temperature Trend</h2>
+                <h2>Temperature Trend</h2>
                 <div class="chart-wrapper">
                     <canvas id="temperatureChart"></canvas>
                 </div>
             </div>
         </div>
 
-        <h2 class="section-title">📊 Live Sensor Feed</h2>
+        <h2 class="section-title">Live Sensor Feed</h2>
         <div class="sensor-grid">
             <div class="sensor-card">
-                <div class="sensor-icon">👁️</div>
+                <div class="sensor-icon"></div>
                 <h3>PIR Motion</h3>
                 <p class="sensor-value" id="pir-value">--</p>
                 <span class="sensor-label">Detection Status</span>
             </div>
             <div class="sensor-card">
-                <div class="sensor-icon">💡</div>
+                <div class="sensor-icon"></div>
                 <h3>LDR Light</h3>
                 <p class="sensor-value" id="ldr-value">--</p>
                 <span class="sensor-label">Brightness Level</span>
             </div>
             <div class="sensor-card">
-                <div class="sensor-icon">🌡️</div>
+                <div class="sensor-icon"></div>
                 <h3>Temperature</h3>
                 <p class="sensor-value" id="temp-value">--</p>
                 <span class="sensor-label">°C</span>
@@ -116,14 +116,13 @@
         </div>
 
         <div class="chart-container">
-            <h2>🤖 AI Decision History</h2>
+            <h2>AI Decision History</h2>
             <div class="chart-wrapper">
                 <canvas id="predictionChart"></canvas>
             </div>
         </div>
 
         <div class="prediction-card">
-            <h2>🎯 Current AI Decision</h2>
             <div id="result">Awaiting Data...</div>
         </div>
     </div>

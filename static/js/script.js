@@ -235,7 +235,7 @@ function displayPrediction(prediction, fanStatus) {
             
             <!-- Header Label -->
             <div style="color: #fff; font-size: 0.9em; font-weight: 600; margin-bottom: 15px; opacity: 0.9;">
-                🎯 Current AI Decisions (Light & Fan)
+                Current AI Decisions (Light & Fan)
             </div>
 
             <!-- Main Status Area: Side by Side -->
@@ -270,7 +270,7 @@ function displayPrediction(prediction, fanStatus) {
                     
                     <!-- Left: Model Name (Green) -->
                     <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                        <span style="font-size: 1.4em;">🤖</span>
+                        <span style="font-size: 1.4em;"></span>
                         <div style="color: #2ecc71; font-weight: 800; font-size: 0.95em; letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                             ${modelStatus.type}
                         </div>

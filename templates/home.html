@@ -3,814 +3,288 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Optimization - Home</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800;900&family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <title>Smart Optimization - Ecosystem</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary-bg-start: #0a0e27;
-            --primary-bg-end: #1a1f3a;
-            --container-bg: rgba(255, 255, 255, 0.04);
-            --glass-bg: rgba(255, 255, 255, 0.06);
-            --glass-border: rgba(255, 255, 255, 0.12);
-            --accent-purple: #8b5cf6;
-            --accent-blue: #3b82f6;
-            --accent-pink: #ec4899;
-            --accent-cyan: #06b6d4;
-            --accent-green: #10b981;
-            --text-primary: #ffffff;
-            --text-secondary: #e2e8f0;
-            --text-muted: #94a3b8;
-            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.1);
-            --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.25);
-            --shadow-lg: 0 20px 50px rgba(0, 0, 0, 0.4);
-            --shadow-xl: 0 30px 70px rgba(0, 0, 0, 0.5);
-            --transition-smooth: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            --transition-base: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --bg-deep: #050505;
+            --accent-primary: #FF5500;
+            --text-main: #ffffff;
+            --text-muted: #888888;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            background: linear-gradient(135deg, var(--primary-bg-start) 0%, var(--primary-bg-end) 100%);
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-primary);
-            font-family: 'Poppins', sans-serif;
             overflow-x: hidden;
-            position: relative;
-            padding: clamp(1rem, 3vw, 2rem);
-        }
-
-        /* Background Elements */
-        .particles {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .particle {
-            position: absolute;
-            width: 3px;
-            height: 3px;
-            background: rgba(139, 92, 246, 0.6);
-            border-radius: 50%;
-            animation: particleFloat 25s infinite ease-in-out;
-            box-shadow: 0 0 8px rgba(139, 92, 246, 0.4);
-        }
-
-        @keyframes particleFloat {
-            0%, 100% { 
-                transform: translateY(0) translateX(0) scale(1);
-                opacity: 0;
-            }
-            5% {
-                opacity: 1;
-            }
-            95% {
-                opacity: 1;
-            }
-            100% { 
-                transform: translateY(-100vh) translateX(calc(var(--drift, 50px)));
-                opacity: 0;
-            }
-        }
-
-        .orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(100px);
-            opacity: 0.25;
-            animation: orbDrift 30s infinite ease-in-out alternate;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        .orb-1 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, var(--accent-purple) 0%, transparent 70%);
-            top: -150px;
-            left: -150px;
-        }
-
-        .orb-2 {
-            width: 600px;
-            height: 600px;
-            background: radial-gradient(circle, var(--accent-blue) 0%, transparent 70%);
-            bottom: -200px;
-            right: -200px;
-            animation-delay: -10s;
-        }
-
-        .orb-3 {
-            width: 450px;
-            height: 450px;
-            background: radial-gradient(circle, var(--accent-pink) 0%, transparent 70%);
-            top: 40%;
-            left: 10%;
-            animation-delay: -20s;
-            opacity: 0.18;
-        }
-
-        @keyframes orbDrift {
-            0% { 
-                transform: translate(0, 0) scale(1);
-            }
-            33% { 
-                transform: translate(80px, 40px) scale(1.1);
-            }
-            66% { 
-                transform: translate(-60px, 80px) scale(0.95);
-            }
-            100% { 
-                transform: translate(40px, -50px) scale(1.05);
-            }
-        }
-
-        /* Main Container - Perfect Centering */
-        .container {
-            position: relative;
-            width: 100%;
-            max-width: 1600px;
-            aspect-ratio: 16 / 9;
-            background: var(--container-bg);
-            border-radius: clamp(20px, 3vw, 32px);
-            border: 1px solid var(--glass-border);
-            box-shadow: 
-                var(--shadow-xl),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                inset 0 -1px 0 rgba(0, 0, 0, 0.2);
-            backdrop-filter: blur(40px);
-            -webkit-backdrop-filter: blur(40px);
             display: flex;
-            flex-direction: column;
-            padding: clamp(2rem, 4vw, 4rem);
-            gap: clamp(1.5rem, 3vw, 2.5rem);
-            z-index: 1;
-            animation: containerSlideIn 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-            overflow: hidden;
+            justify-content: center;
+            position: relative;
         }
 
-        .container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
+        .ambient-glow {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 70vw; height: 70vw;
+            background: radial-gradient(circle, rgba(255, 85, 0, 0.06), transparent 60%);
+            filter: blur(100px);
+            z-index: 0;
+            pointer-events: none;
+            transition: transform 0.1s ease-out;
+        }
+        .wrapper {
+            position: relative;
+            z-index: 10;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(
-                90deg,
-                transparent,
-                rgba(255, 255, 255, 0.05),
-                transparent
-            );
-            animation: shimmerSlide 10s infinite;
-        }
-
-        @keyframes shimmerSlide {
-            0% {
-                left: -100%;
-            }
-            50%, 100% {
-                left: 100%;
-            }
-        }
-
-        @keyframes containerSlideIn {
-            from { 
-                opacity: 0; 
-                transform: translateY(60px) scale(0.96);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0) scale(1);
-            }
-        }
-
-        /* Header Section - Perfect Vertical Centering */
-        .header {
-            text-align: center;
+            max-width: 1200px;
+            padding: 6rem 2rem;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            gap: clamp(1rem, 2vw, 1.5rem);
-            animation: fadeInDown 1s ease-out forwards;
+            text-align: center;
         }
 
-        @keyframes fadeInDown {
-            from { 
-                opacity: 0; 
-                transform: translateY(-40px);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0);
-            }
+        .status-pill {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--accent-primary);
+            background: rgba(255, 85, 0, 0.08);
+            padding: 6px 16px;
+            border-radius: 100px;
+            border: 1px solid rgba(255, 85, 0, 0.2);
+            margin-bottom: 2rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 1s ease-out;
+        }
+
+        .status-pill::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent-primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--accent-primary);
+            animation: blink 2s infinite;
         }
 
         h1 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            margin: 0;
-            background: linear-gradient(
-                135deg, 
-                var(--accent-purple) 0%, 
-                var(--accent-pink) 50%, 
-                var(--accent-cyan) 100%
-            );
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 900;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3.5rem, 6vw, 6rem);
+            line-height: 1;
+            font-weight: 700;
             letter-spacing: -0.03em;
-            line-height: 1.1;
-            position: relative;
-            display: inline-block;
-            animation: gradientShift 8s ease infinite;
-        }
-
-        @keyframes gradientShift {
-            0%, 100% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-        }
-
-        h1::after {
-            content: '';
-            position: absolute;
-            bottom: -12px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 4px;
-            background: linear-gradient(
-                90deg, 
-                transparent, 
-                var(--accent-purple), 
-                transparent
-            );
-            border-radius: 2px;
-            animation: underlineGrow 2s ease-in-out infinite;
-        }
-
-        @keyframes underlineGrow {
-            0%, 100% {
-                width: 60%;
-                opacity: 0.5;
-            }
-            50% {
-                width: 80%;
-                opacity: 1;
-            }
+            margin-bottom: 1.5rem;
+            color: white;
+            min-height: 1.1em;
         }
 
         .subtitle {
-            font-size: clamp(1rem, 2vw, 1.25rem);
-            color: var(--text-secondary);
-            max-width: 850px;
-            margin: 0 auto;
-            line-height: 1.8;
-            font-weight: 400;
-            text-align: center;
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            max-width: 600px;
+            margin-bottom: 3rem;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.2s backwards;
         }
 
-        .nav-buttons {
+        .cta-group {
             display: flex;
-            gap: clamp(1rem, 3vw, 2rem);
-            justify-content: center;
-            align-items: center;
-            flex-wrap: wrap;
-            animation: fadeInUp 1s ease-out forwards 0.3s;
-            opacity: 0;
-            padding: 0 1rem;
+            gap: 1rem;
+            margin-bottom: 6rem;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s backwards;
         }
 
-        @keyframes fadeInUp {
-            from { 
-                opacity: 0; 
-                transform: translateY(40px);
-            }
-            to { 
-                opacity: 1; 
-                transform: translateY(0);
-            }
-        }
-
-        .nav-button {
-            position: relative;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.875rem;
-            padding: clamp(1rem, 2vw, 1.375rem) clamp(2rem, 4vw, 3rem);
-            border-radius: 16px;
+        .btn {
             text-decoration: none;
-            font-size: clamp(1rem, 1.5vw, 1.125rem);
-            font-weight: 700;
-            color: white;
-            transition: var(--transition-smooth);
-            overflow: hidden;
-            cursor: pointer;
-            border: 2px solid transparent;
-            white-space: nowrap;
-            letter-spacing: 0.02em;
-        }
-
-        .nav-button::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(
-                135deg, 
-                rgba(255, 255, 255, 0.15) 0%, 
-                transparent 100%
-            );
-            opacity: 0;
-            transition: opacity 0.4s ease;
-        }
-
-        .nav-button:hover::before {
-            opacity: 1;
-        }
-
-        .nav-button::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.25);
-            transform: translate(-50%, -50%);
-            transition: width 0.7s ease, height 0.7s ease;
-        }
-
-        .nav-button:active::after {
-            width: 400px;
-            height: 400px;
-        }
-
-        .classroom-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            box-shadow: 0 12px 35px rgba(102, 126, 234, 0.35);
-        }
-
-        .classroom-btn:hover {
-            box-shadow: 0 20px 55px rgba(102, 126, 234, 0.5);
-        }
-
-        .dashboard-btn {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 12px 35px rgba(240, 147, 251, 0.35);
-        }
-
-        .dashboard-btn:hover {
-            box-shadow: 0 20px 55px rgba(240, 147, 251, 0.5);
-        }
-
-        .nav-button:hover {
-            transform: translateY(-6px) scale(1.04);
-        }
-
-        .nav-button:active {
-            transform: translateY(-3px) scale(1);
-        }
-
-        .nav-button i {
-            font-size: clamp(1.2rem, 2vw, 1.4rem);
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        .nav-button:hover i {
-            transform: rotate(12deg) scale(1.15);
-        }
-        .feature-grid {
-            flex: 1;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
-            gap: clamp(1.25rem, 2.5vw, 2rem);
-            align-items: stretch;
-            animation: fadeIn 1s ease-out forwards 0.6s;
-            opacity: 0;
-        }
-
-        @keyframes fadeIn {
-            from { 
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .feature-item {
+            padding: 14px 32px;
+            border-radius: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
             position: relative;
-            background: var(--glass-bg);
-            border-radius: 20px;
-            padding: clamp(1.5rem, 3vw, 2rem);
-            border: 1px solid var(--glass-border);
-            transition: var(--transition-smooth);
-            cursor: pointer;
             overflow: hidden;
+        }
+
+        .btn-primary {
+            background: white;
+            color: black;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-secondary {
+            color: var(--text-muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary:hover {
+            color: white;
+            border-color: white;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1px; 
+            width: 100%;
+            background: rgba(255, 255, 255, 0.08); 
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            animation: slideUp 1s cubic-bezier(0.16, 1, 0.3, 1) 0.5s backwards;
+        }
+
+        .features-grid::before {
+            content: '';
+            position: absolute;
+            height: 100%;
+            width: 100%;
+            background: radial-gradient(
+                800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), 
+                rgba(255, 255, 255, 0.04), 
+                transparent 40%
+            );
+            z-index: 3;
+            pointer-events: none;
+        }
+
+        .feature-card {
+            background: var(--bg-deep);
+            padding: 3rem 2rem;
+            position: relative;
+            z-index: 2;
+            transition: background 0.3s;
             display: flex;
             flex-direction: column;
-            gap: clamp(0.75rem, 1.5vw, 1rem);
-            height: 100%;
+            gap: 1rem;
         }
 
-        .feature-item::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 4px;
-            background: linear-gradient(
-                90deg, 
-                var(--accent-purple), 
-                var(--accent-cyan)
-            );
-            transform: scaleX(0);
-            transform-origin: left;
-            transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .feature-card:hover {
+            background: #0a0a0a;
         }
 
-        .feature-item:hover::before {
-            transform: scaleX(1);
+        .icon {
+            font-size: 1.5rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+            transition: 0.3s;
         }
 
-        .feature-item::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(
-                circle, 
-                var(--accent-purple) 0%, 
-                transparent 70%
-            );
-            opacity: 0;
-            transform: translate(-50%, -50%);
-            transition: opacity 0.5s ease;
-            pointer-events: none;
-            filter: blur(50px);
-        }
-
-        .feature-item:hover::after {
-            opacity: 0.12;
-        }
-
-        .feature-item:hover {
-            transform: translateY(-12px);
-            background: rgba(255, 255, 255, 0.09);
-            border-color: rgba(139, 92, 246, 0.4);
-            box-shadow: 
-                0 24px 48px rgba(139, 92, 246, 0.25),
-                inset 0 1px 0 rgba(255, 255, 255, 0.2);
-        }
-
-        .feature-icon-wrapper {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(
-                135deg, 
-                rgba(139, 92, 246, 0.15), 
-                rgba(6, 182, 212, 0.15)
-            );
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: var(--transition-smooth);
-            border: 1px solid rgba(139, 92, 246, 0.25);
-        }
-
-        .feature-item:hover .feature-icon-wrapper {
-            transform: scale(1.12) rotate(8deg);
-            background: linear-gradient(
-                135deg, 
-                rgba(139, 92, 246, 0.25), 
-                rgba(6, 182, 212, 0.25)
-            );
-            border-color: rgba(139, 92, 246, 0.5);
-            box-shadow: 0 8px 24px rgba(139, 92, 246, 0.3);
-        }
-
-        .feature-item i {
-            font-size: clamp(1.75rem, 3vw, 2.25rem);
-            background: linear-gradient(135deg, var(--accent-purple), var(--accent-cyan));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            transition: transform 0.4s ease;
-        }
-
-        .feature-item:hover i {
+        .feature-card:hover .icon {
+            color: var(--accent-primary);
             transform: scale(1.1);
         }
 
-        .feature-item h3 {
-            font-family: 'Montserrat', sans-serif;
-            font-size: clamp(1.15rem, 2vw, 1.35rem);
-            margin: 0;
-            color: var(--text-primary);
-            font-weight: 800;
-            line-height: 1.3;
-            letter-spacing: -0.01em;
+        .feature-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            color: white;
         }
 
-        .feature-item p {
+        .feature-card p {
+            font-size: 0.9rem;
             color: var(--text-muted);
-            font-size: clamp(0.9rem, 1.5vw, 1rem);
-            line-height: 1.7;
-            font-weight: 400;
-            margin: 0;
-            flex: 1;
+            line-height: 1.5;
         }
 
-        /* Scroll Indicator */
-        .scroll-indicator {
-            position: absolute;
-            bottom: clamp(1.5rem, 3vw, 2.5rem);
-            left: 50%;
-            transform: translateX(-50%);
-            opacity: 0;
-            animation: 
-                fadeIn 2s ease-out forwards 2.5s,
-                scrollBounce 2.5s infinite 3.5s;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .scroll-indicator i {
-            font-size: 2rem;
-            color: var(--accent-purple);
-            filter: drop-shadow(0 0 8px rgba(139, 92, 246, 0.6));
-        }
-
-        @keyframes scrollBounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateX(-50%) translateY(0);
-            }
-            40% {
-                transform: translateX(-50%) translateY(12px);
-            }
-            60% {
-                transform: translateX(-50%) translateY(6px);
-            }
-        }
-
-        /* Responsive Design - Maintaining Perfect Alignment */
-        @media (max-width: 1400px) {
-            .container {
-                aspect-ratio: auto;
-                min-height: auto;
-            }
-        }
-
-        @media (max-width: 1024px) {
-            .container {
-                padding: clamp(1.5rem, 3vw, 2.5rem);
-                gap: clamp(1.25rem, 2.5vw, 2rem);
-            }
-            
-            .feature-grid {
-                grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
-                gap: clamp(1rem, 2vw, 1.5rem);
-            }
-        }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         @media (max-width: 768px) {
-            body {
-                padding: 1rem;
-            }
-
-            .container {
-                border-radius: 20px;
-                padding: 2rem 1.5rem;
-            }
-
-            .nav-buttons {
-                flex-direction: column;
-                gap: 1rem;
-                width: 100%;
-                max-width: 400px;
-                margin: 0 auto;
-            }
-
-            .nav-button {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .feature-grid {
-                grid-template-columns: 1fr;
-                gap: 1.25rem;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .container {
-                padding: 1.5rem 1rem;
-            }
-
-            h1::after {
-                display: none;
-            }
-
-            .feature-item {
-                padding: 1.5rem;
-            }
-
-            .feature-icon-wrapper {
-                width: 56px;
-                height: 56px;
-            }
-        }
-
-        /* Accessibility */
-        @media (prefers-reduced-motion: reduce) {
-            *,
-            *::before,
-            *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        .nav-button:focus-visible,
-        .feature-item:focus-visible {
-            outline: 3px solid rgba(139, 92, 246, 0.6);
-            outline-offset: 4px;
-        }
-
-        /* High Contrast Mode */
-        @media (prefers-contrast: high) {
-            .container,
-            .feature-item {
-                border-width: 2px;
-            }
+            .wrapper { padding-top: 4rem; align-items: flex-start; text-align: left; }
+            .subtitle { margin: 0 0 2rem 0; }
+            .features-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <div class="particles" id="particles"></div>
-    
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
 
-    <div class="container">
-        <div class="header">
-            <h1>Smart Optimization</h1>
-            <p class="subtitle">Your intelligent platform for data-driven decisions. Harness the power of AI to refine strategies and maximize outcomes across various domains.</p>
+    <div class="ambient-glow" id="glow"></div>
+
+    <div class="wrapper">
+        <div class="status-pill">System Version 2.0 – Online and Fully Operational</div>
+        
+        <h1 id="scramble-title" data-value="Smart Optimization">Smart Optimization</h1>
+        
+        <p class="subtitle">
+            Harness AI-driven insights to simulate environments, monitor real-time metrics, 
+            and maximize outcomes across your entire ecosystem.
+        </p>
+
+        <div class="cta-group">
+            <a href="{{ url_for('index') }}" class="btn btn-primary">Launch Dashboard</a>
+            <a href="{{ url_for('classroom_simulation') }}" class="btn btn-secondary">Simulation</a>
         </div>
 
-        <div class="nav-buttons">
-            <a href="{{ url_for('classroom_simulation') }}" class="nav-button classroom-btn">
-                <i class="fas fa-chalkboard-teacher"></i>
-                <span>Classroom Simulation</span>
-            </a>
-            <a href="{{ url_for('index') }}" class="nav-button dashboard-btn">
-                <i class="fas fa-chart-line"></i>
-                <span>Live Dashboard</span>
-            </a>
-        </div>
-
-        <div class="feature-grid">
-            <div class="feature-item" tabindex="0">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-graduation-cap"></i>
-                </div>
+        <div class="features-grid" id="grid">
+            <div class="feature-card">
+                <i class="fas fa-graduation-cap icon"></i>
                 <h3>Interactive Learning</h3>
-                <p>Experience dynamic, data-rich educational environments with real-time analytics and engagement insights.</p>
+                <p>Real-time analytics and deep engagement insights for educational environments.</p>
             </div>
-            <div class="feature-item" tabindex="0">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-chart-bar"></i>
-                </div>
+            <div class="feature-card">
+                <i class="fas fa-chart-line icon"></i>
                 <h3>Dynamic Monitoring</h3>
-                <p>Monitor performance metrics and key indicators dynamically for continuous optimization and growth.</p>
+                <p>Track critical performance metrics and key indicators for continuous optimization.</p>
             </div>
-            <div class="feature-item" tabindex="0">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-robot"></i>
-                </div>
-                <h3>Advanced AI Integration</h3>
-                <p>Leverage cutting-edge machine learning for smarter predictions, automated processes, and efficient decision-making.</p>
-            </div>
-            <div class="feature-item" tabindex="0">
-                <div class="feature-icon-wrapper">
-                    <i class="fas fa-mobile-alt"></i>
-                </div>
-                <h3>Universal Accessibility</h3>
-                <p>Enjoy a seamless and intuitive experience across all devices, meticulously designed for desktop and mobile users alike.</p>
+            <div class="feature-card">
+                <i class="fas fa-brain icon"></i>
+                <h3>Neural Processing</h3>
+                <p>Utilize cutting-edge machine learning models for smarter automated decisions.</p>
             </div>
         </div>
     </div>
 
     <script>
-        const particlesContainer = document.getElementById('particles');
-        const particleCount = Math.min(40, Math.floor(window.innerWidth / 40));
+        const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        const h1 = document.getElementById("scramble-title");
+        let interval = null;
 
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            particle.style.setProperty('--drift', `${Math.random() * 200 - 100}px`);
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.animationDelay = Math.random() * 25 + 's';
-            particle.style.animationDuration = (20 + Math.random() * 15) + 's';
-            
-            const size = 2 + Math.random() * 3;
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            
-            particlesContainer.appendChild(particle);
+        const runScramble = () => {
+            let iteration = 0;
+            clearInterval(interval);
+            interval = setInterval(() => {
+                h1.innerText = h1.innerText
+                    .split("")
+                    .map((letter, index) => {
+                        if(index < iteration) return h1.dataset.value[index];
+                        return letters[Math.floor(Math.random() * 26)];
+                    })
+                    .join("");
+                if(iteration >= h1.dataset.value.length) clearInterval(interval);
+                iteration += 1 / 3;
+            }, 30);
         }
+        window.onload = runScramble;
+        h1.onmouseover = runScramble;
 
-        document.querySelectorAll('.nav-button').forEach(button => {
-            button.addEventListener('click', function(e) {
-                const rect = this.getBoundingClientRect();
-                const ripple = document.createElement('span');
-                
-                ripple.style.position = 'absolute';
-                ripple.style.borderRadius = '50%';
-                ripple.style.background = 'rgba(255, 255, 255, 0.6)';
-                ripple.style.pointerEvents = 'none';
-                
-                const size = Math.max(rect.width, rect.height) * 2;
-                ripple.style.width = ripple.style.height = size + 'px';
-                
-                ripple.style.left = (e.clientX - rect.left - size / 2) + 'px';
-                ripple.style.top = (e.clientY - rect.top - size / 2) + 'px';
-                
-                ripple.style.transform = 'scale(0)';
-                ripple.style.opacity = '1';
-                ripple.style.transition = 'transform 0.8s ease, opacity 0.8s ease';
-                
-                this.appendChild(ripple);
-                
-                requestAnimationFrame(() => {
-                    ripple.style.transform = 'scale(1)';
-                    ripple.style.opacity = '0';
-                });
-                
-                setTimeout(() => ripple.remove(), 800);
-            });
-        });
+        const grid = document.getElementById("grid");
+        grid.onmousemove = e => {
+            const rect = grid.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            grid.style.setProperty("--mouse-x", `${x}px`);
+            grid.style.setProperty("--mouse-y", `${y}px`);
+        };
 
-        let rafId = null;
-        document.addEventListener('mousemove', (e) => {
-            if (rafId) return;
-            
-            rafId = requestAnimationFrame(() => {
-                const items = document.querySelectorAll('.feature-item');
-                const x = (e.clientX / window.innerWidth - 0.5) * 2;
-                const y = (e.clientY / window.innerHeight - 0.5) * 2;
-                
-                items.forEach((item, index) => {
-                    const depth = (index % 2 === 0) ? 8 : -8;
-                    const moveX = x * depth;
-                    const moveY = y * depth;
-                    
-                    item.style.transform = `translate(${moveX}px, ${moveY}px)`;
-                });
-                
-                rafId = null;
-            });
-        });
-
-        document.body.addEventListener('mouseleave', () => {
-            document.querySelectorAll('.feature-item').forEach(item => {
-                item.style.transform = '';
-            });
-        });
+        const glow = document.getElementById("glow");
+        document.onmousemove = e => {
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+            glow.style.transform = `translate(-${50 + x * 10}%, -${50 + y * 10}%)`;
+        }
     </script>
 </body>
 </html>
