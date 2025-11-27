@@ -213,7 +213,7 @@ function updateStatus(connected, message = '') {
         statusDot.classList.remove('disconnected');
         statusDot.style.backgroundColor = '#10b981';
         statusText.textContent = message || (modelStatus.loaded ? 
-            `AI Model Active (${modelStatus.accuracy})` : 'Connected');
+            `Model Active (${modelStatus.accuracy})` : 'Connected');
     } else {
         statusDot.classList.add('disconnected');
         statusDot.style.backgroundColor = '#ef4444';
@@ -221,21 +221,18 @@ function updateStatus(connected, message = '') {
     }
 }
 
-// --- UPDATED DISPLAY LOGIC: MATCHING SCREENSHOT FOOTER STYLE ---
 function displayPrediction(prediction, fanStatus) {
-    // Logic for Text Content
     let lightMessage = prediction.includes('Light ON') ? 'LIGHT ON' : 'LIGHT OFF';
     let fanMessage = fanStatus === 'Fan ON' ? 'FAN ON' : 'FAN OFF';
     
-    // Logic for Static Visuals
-    const staticMainColor = '#fbbf24'; // Warm Yellow for Status
+    const staticMainColor = '#fbbf24'; 
 
     resultDiv.innerHTML = `
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%;">
             
             <!-- Header Label -->
             <div style="color: #fff; font-size: 0.9em; font-weight: 600; margin-bottom: 15px; opacity: 0.9;">
-                Current AI Decisions (Light & Fan)
+                Current Model Decisions (Light & Fan)
             </div>
 
             <!-- Main Status Area: Side by Side -->
