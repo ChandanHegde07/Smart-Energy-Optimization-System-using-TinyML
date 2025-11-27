@@ -103,17 +103,6 @@ The TinyML model runs directly on the ESP32, enabling low-latency inference and 
 
 ---
 
-## Energy Savings Impact
-
-The system intelligently prevents unnecessary lighting by analyzing:
-- Room occupancy via motion detection
-- Natural light availability via LDR readings
-- Environmental conditions via temperature data
-
-This results in measurable reductions in energy consumption, CO₂ emissions, and electricity costs.
-
----
-
 ## Usage
 
 ### Hardware Mode
