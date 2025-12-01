@@ -86,7 +86,7 @@ This project demonstrates an energy-efficient lighting control system that uses 
 
 ---
 
-## Machine Learning Model
+## Deep Learning Model
 
 The system uses a Feedforward Neural Network (FNN) trained on historical sensor data to predict optimal lighting states.
 
