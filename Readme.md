@@ -1,4 +1,4 @@
-# Smart Energy Optimization System using TinyML
+# TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction
 
 A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, and environmental sensors. The system employs machine learning to make smart lighting decisions based on motion detection, ambient light levels, and room temperature, enabling significant energy savings.
 
