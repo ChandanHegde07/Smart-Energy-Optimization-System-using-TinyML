@@ -113,12 +113,6 @@ Run the system without physical hardware using built-in sensor simulation for te
 
 ---
 
-## MIT License
-
-This project is available for educational and research purposes.
-
----
-
 # Patent Information
 
 ## Patent Status
