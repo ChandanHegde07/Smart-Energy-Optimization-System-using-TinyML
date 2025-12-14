@@ -119,14 +119,25 @@ This project is available for educational and research purposes.
 
 ---
 
-## Patent Information
+# Patent Information
 
-**Patent Status**: Patent Pending
+## Patent Status
+Published (Indian Patent Office)
 
-This project contains proprietary technology and methodologies for which a patent application has been filed. All intellectual property rights related to the Smart Energy Optimization System using TinyML are protected under applicable patent laws.
+## Project Details
+This project includes proprietary technology and methodologies disclosed in a patent published by the Indian Patent Office (IPO) in the name of **Sai Vidya Institute of Technology (SVIT)**.
 
-**Important Notice**: Unauthorized use, reproduction, or distribution of the patented technology may constitute patent infringement and is subject to legal action.
+**Technology**: TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction
 
-For licensing inquiries or commercial use, please contact the project maintainers.
+## Intellectual Property Rights
+All intellectual property rights related to the TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction are protected under applicable patent and intellectual property laws.
+
+## Important Notice
+**Unauthorized use, reproduction, or distribution of the patented/patent-published technology may constitute infringement and may be subject to legal action.**
+
+## Licensing and Commercial Use
+For licensing inquiries or commercial use, please contact:
+* Project maintainers
+* Sai Vidya Institute of Technology (SVIT)
 
 
