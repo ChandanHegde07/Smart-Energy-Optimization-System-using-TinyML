@@ -121,7 +121,7 @@ Published (Indian Patent Office)
 ## Project Details
 This project includes proprietary technology and methodologies disclosed in a patent published by the Indian Patent Office (IPO) in the name of **Sai Vidya Institute of Technology (SVIT)**.
 
-**Technology**: TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction
+**Title**: TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction
 
 ## Intellectual Property Rights
 All intellectual property rights related to the TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction are protected under applicable patent and intellectual property laws.
