@@ -99,8 +99,6 @@ The system uses a Feedforward Neural Network (FNN) trained on historical sensor 
 | Input Features | Motion (PIR), Light Level (LDR), Temperature |
 | Output | Light Control Decision (ON/OFF) |
 
-The TinyML model runs directly on the ESP32, enabling low-latency inference and reducing dependence on cloud connectivity.
-
 ---
 
 ## Usage
