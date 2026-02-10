@@ -1,192 +1,100 @@
 # Smart Energy Optimization System using TinyML
 
-A real-time IoT dashboard for intelligent lighting control using TinyML, ESP32, and environmental sensors. The system employs machine learning to make smart lighting decisions based on motion detection, ambient light levels, and room temperature, enabling significant energy savings.
-
----
+An intelligent IoT-based lighting control system that leverages TinyML for edge-based decision-making. By processing environmental data locally on an ESP32, the system maximizes energy efficiency while ensuring real-time response and data privacy.
 
 ## Overview
 
-This project demonstrates an energy-efficient lighting control system that uses TinyML (Tiny Machine Learning) for edge-based decision making. By processing sensor data directly on the ESP32 microcontroller, the system achieves real-time responses while minimizing energy consumption and maintaining user privacy.
-
----
+This project bridges the gap between IoT and Machine Learning. Unlike traditional "if-then" automation, this system utilizes a Feedforward Neural Network (FNN) to analyze motion, ambient light, and temperature, predicting the most energy-efficient lighting state with 98% accuracy.
 
 ## Key Features
 
-- **Real-time Sensor Monitoring**: Live visualization of PIR motion, LDR light levels, and temperature data
-- **TinyML Integration**: Intelligent decision-making using machine learning models with **98% accuracy**
-- **Energy Analytics**: Track energy savings, CO₂ reduction, and cost savings
-- **Interactive Charts**: Chart.js visualizations with historical data trends
-- **Auto-refresh**: Configurable live data updates every 2 seconds
-- **Simulation Mode**: Test without hardware using realistic sensor data generation
-
----
-
-## Hardware Components
-
-| Component | Model | Purpose |
-|-----------|-------|---------|
-| Microcontroller | ESP32 | Main processing unit with Wi-Fi capability |
-| Temperature Sensor | DHT11/DHT22 | Monitors room temperature and humidity |
-| Motion Sensor | PIR (HC-SR501) | Detects human presence |
-| Light Sensor | LDR (Light Dependent Resistor) | Measures ambient brightness levels |
-
----
+- **Edge Intelligence**: Inference happens directly on the ESP32—no cloud latency or privacy concerns.
+- **Predictive Analytics**: Tracks cumulative energy saved (kWh), CO₂ reduction, and cost savings (USD).
+- **Live Dashboard**: Interactive visualizations powered by Chart.js with a 2-second auto-refresh rate.
+- **Hybrid Operation**: Seamlessly switch between physical hardware mode and a software simulation mode.
+- **High Accuracy**: Robust ML model trained to prevent "false triggers" from ambient light fluctuations.
 
 ## Technology Stack
 
-### Backend
+### Hardware & Firmware
 
-| Technology | Purpose |
-|------------|---------|
-| Python | Core programming language |
-| Flask | Web framework for API and dashboard |
-| NumPy | Numerical computations |
-| Pandas | Data manipulation and analysis |
-| Scikit-learn | Machine learning model training |
-| TensorFlow | Deep learning framework for FNN model |
-| Pickle | Model serialization |
+| Component | Model | Purpose |
+|-----------|-------|---------|
+| Microcontroller | ESP32 | Dual-core processing & Wi-Fi connectivity |
+| Temp/Humidity | DHT11/DHT22 | Monitors thermal environment |
+| Motion Sensor | PIR (HC-SR501) | Human presence detection |
+| Light Sensor | LDR | Ambient brightness measurement |
 
-### Frontend
+### Software & ML
 
-| Technology | Purpose |
-|------------|---------|
-| HTML5 | Structure and markup |
-| CSS3 | Styling and layout |
-| JavaScript | Interactive functionality |
-| Chart.js | Data visualizations |
-
-### Hardware Libraries
-
-| Library | Purpose |
-|---------|---------|
-| ArduinoJson | JSON parsing for ESP32 |
-| DHT Sensor Library | Temperature/humidity readings |
-
----
-
-## Dashboard Components
-
-### Sensor Monitoring
-- **PIR Motion Sensor**: Detects human presence (Binary: 0/1)
-- **LDR Light Sensor**: Measures ambient brightness (Range: 0-100)
-- **Temperature Sensor**: Monitors room temperature (°C)
-
-### Analytics & Statistics
-- Cumulative energy saved (kWh)
-- CO₂ emissions reduced (kg)
-- Cost savings (USD)
-- Number of unnecessary light activations prevented
-- Temperature statistics (min/max/average)
-
-### Visualizations
-- Energy savings trend chart
-- Temperature monitoring graph
-- AI decision history
-- Real-time status indicators
-
----
+- **Backend**: Python, Flask, NumPy, Pandas
+- **Machine Learning**: TensorFlow (Lite for Microcontrollers), Scikit-learn
+- **Frontend**: HTML5, CSS3, JavaScript (Chart.js)
+- **Firmware**: C++, Arduino Framework, ArduinoJson
 
 ## Deep Learning Model
 
-The system uses a Feedforward Neural Network (FNN) trained on historical sensor data to predict optimal lighting states.
-
-### Model Performance
+The core logic is driven by a Feedforward Neural Network (FNN) optimized for resource-constrained hardware.
 
 | Metric | Value |
 |--------|-------|
-| Model Type | Feedforward Neural Network (FNN) |
-| Accuracy | **98%** |
-| Input Features | Motion (PIR), Light Level (LDR), Temperature |
-| Output | Light Control Decision (ON/OFF) |
-
-The TinyML model runs directly on the ESP32, enabling low-latency inference and reducing dependence on cloud connectivity.
-
----
-
-## Usage
-
-### Hardware Mode
-Connect your ESP32 with sensors to the Flask server endpoint. The dashboard will display live sensor data and ML-driven lighting decisions.
-
-### Simulation Mode
-Run the system without physical hardware using built-in sensor simulation for testing and demonstration purposes.
-
----
-
-# Patent Information
-
-## Patent Status
-Published (Indian Patent Office)
-
-## Project Details
-This project includes proprietary technology and methodologies disclosed in a patent published by the Indian Patent Office (IPO) in the name of **Sai Vidya Institute of Technology (SVIT)**.
-
-**Technology**: TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction
-
-## Intellectual Property Rights
-All intellectual property rights related to the TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction are protected under applicable patent and intellectual property laws.
-
-## Important Notice
-**Unauthorized use, reproduction, or distribution of the patented/patent-published technology may constitute infringement and may be subject to legal action.**
-
-## Licensing and Commercial Use
-For licensing inquiries or commercial use, please contact:
-* Project maintainers
-* Sai Vidya Institute of Technology (SVIT)
-
----
+| Architecture | Multi-layer Perceptron (MLP) |
+| Input Features | [Motion, Light, Temperature] |
+| Accuracy | 98% |
+| Deployment | Serialized and quantized for TinyML edge execution |
 
 ## Project Structure
 
 ```
 Smart-Energy-Optimization/
-├── .gitignore                  # Git ignore rules
-├── LICENSE                     # Project license file
-├── Logging.py                  # Python script for serial data logging from ESP32
-├── Readme.md                   # Project documentation (this file)
-├── requirements.txt            # Python dependencies
-├── Sensor.cpp                  # Arduino/ESP32 firmware for sensor data collection
-└── results/                    # Visualization outputs and result images
-    ├── activation_functions.png
-    ├── complete_architecture_visualization.png
-    ├── fnn_vs_ml_edge_deployment.png
-    ├── model_architecture.png
-    └── training_results.png
+├── Logging.py           # Serial data logger (ESP32 → CSV)
+├── Sensor.cpp           # ESP32 Firmware (C++)
+├── requirements.txt      # Python dependencies
+├── results/              # ML Visualizations
+│   ├── activation_functions.png
+│   ├── complete_architecture_visualization.png
+│   ├── model_architecture.png
+│   └── training_results.png
+└── README.md
 ```
 
----
+## Results & Performance
 
-## File Descriptions
+The `results/` directory contains comprehensive performance evaluations:
 
-### Core Files
+- **Training Results**: Accuracy and Loss curves demonstrating model convergence.
+- **Activation Functions**: A comparison of ReLU vs Sigmoid performance on the edge.
+- **Edge vs Cloud**: Data showing the latency benefits of FNN edge deployment.
 
-| File | Description |
-|------|-------------|
-| [`Logging.py`](Logging.py) | Python script that connects to ESP32 via serial port to log sensor data (Temperature, Light, PIR) to a CSV file for training and analysis |
-| [`Sensor.cpp`](Sensor.cpp) | Arduino/ESP32 firmware that reads DHT11 temperature sensor, LDR light sensor, and PIR motion sensor, then outputs data via serial |
-| [`requirements.txt`](requirements.txt) | Python package dependencies including Flask, TensorFlow, scikit-learn, and matplotlib |
+## Patent & Intellectual Property
 
-### Results Directory
+> [!IMPORTANT]
+> This technology is Patent Published through the Indian Patent Office (IPO).
+>
+> **Patent Title**: TinyML - Driven Occupancy and Appliance Control System for Classroom Energy Reduction
+>
+> **Assignee**: Sai Vidya Institute of Technology (SVIT)
+>
+> **Notice**: Unauthorized reproduction or commercial distribution of this methodology is strictly prohibited and may result in legal action.
 
-The [`results/`](results/) folder contains visualization outputs from the machine learning model training and analysis:
+For licensing or academic collaboration, please contact the SVIT IP Cell.
 
-| Image | Description |
-|-------|-------------|
-| `activation_functions.png` | Comparison of different neural network activation functions used in the model |
-| `complete_architecture_visualization.png` | Full system architecture diagram showing hardware, software, and ML components |
-| `fnn_vs_ml_edge_deployment.png` | Comparison between Feedforward Neural Network and traditional ML approaches for edge deployment |
-| `model_architecture.png` | Detailed neural network layer architecture visualization |
-| `training_results.png` | Model training metrics, accuracy curves, and performance charts |
+## Installation & Setup
 
----
+1. **Clone the Repo**:
+   ```bash
+   git clone https://github.com/your-username/Smart-Energy-Optimization.git
+   ```
 
-## Data Flow
+2. **Install Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-1. **Sensor Collection**: [`Sensor.cpp`](Sensor.cpp) running on ESP32 reads temperature, light, and motion sensors
-2. **Data Logging**: [`Logging.py`](Logging.py) captures serial output and saves to `Sensor Data.csv`
-3. **ML Training**: Collected data is used to train the FNN model
-4. **Edge Inference**: Trained model runs on ESP32 for real-time lighting decisions
-5. **Visualization**: Results and model performance are saved to the [`results/`](results/) directory
+3. **Flash Hardware**:
+   Upload `Sensor.cpp` to your ESP32 using VS Code (PlatformIO) or Arduino IDE.
 
-
-
+4. **Run Dashboard**:
+   ```bash
+   python app.py
+   ```
