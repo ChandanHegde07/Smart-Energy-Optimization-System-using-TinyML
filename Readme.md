@@ -106,7 +106,7 @@ ESP32 GPIO 26 ──► Relay IN
                   Relay NC  ──► (unused)
 ```
 
-> ⚠️ **Safety Notice**: Relay switching of mains AC voltage (120V/240V) carries risk of electric shock or fire. Ensure all AC connections are enclosed in a suitable housing and handled only by qualified personnel. Use an optically-isolated relay module for additional protection.
+> **Safety Notice**: Relay switching of mains AC voltage (120V/240V) carries risk of electric shock or fire. Ensure all AC connections are enclosed in a suitable housing and handled only by qualified personnel. Use an optically-isolated relay module for additional protection.
 
 ### Schematic Overview (Text Representation)
 
@@ -124,7 +124,7 @@ ESP32 GPIO 26 ──► Relay IN
 └─────────────────────────────────────────────────┘
 ```
 
-> 📌 A full KiCad/Fritzing schematic is available in the `hardware/` directory (if included in this repository).
+> A full KiCad/Fritzing schematic is available in the `hardware/` directory (if included in this repository).
 
 ---
 
@@ -197,9 +197,9 @@ Performance measurements obtained on an **ESP32 DevKit v1 (240 MHz, single-core 
 
 | Deployment Mode | Round-Trip Latency | Privacy | Offline Capable |
 |----------------|-------------------|---------|-----------------|
-| **Edge (ESP32)** | **< 50 ms** | ✅ Full | ✅ Yes |
-| Cloud API (Wi-Fi) | 200–800 ms | ❌ Data leaves device | ❌ No |
-| Cloud API (4G/LTE) | 400–1500 ms | ❌ Data leaves device | ❌ No |
+| **Edge (ESP32)** | **< 50 ms** | Full | Yes |
+| Cloud API (Wi-Fi) | 200–800 ms | Data leaves device | No |
+| Cloud API (4G/LTE) | 400–1500 ms | Data leaves device | No |
 
 Edge deployment achieves a **4–30× latency reduction** over cloud-based inference, with the additional benefit of fully offline operation — critical for energy management in environments with unreliable network connectivity.
 
@@ -266,7 +266,7 @@ The `results/` directory contains comprehensive model evaluation artifacts:
 
 **1. Clone the Repository**
 ```bash
-git clone https://github.com/your-username/Smart-Energy-Optimization.git
+git clone https://github.com/ChandanHegde07/Smart-Energy-Optimization-System-using-TinyML.git
 cd Smart-Energy-Optimization
 ```
 
