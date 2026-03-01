@@ -7,7 +7,7 @@
 
 ## Abstract
 
-This project presents an intelligent IoT-based lighting control system that leverages TinyML for edge-based decision-making. By processing environmental data locally on an ESP32 microcontroller, the system maximizes energy efficiency while ensuring real-time response and data privacy. Unlike traditional threshold-based automation, this system employs a Feedforward Neural Network (FNN) to analyze motion, ambient light, and temperature, predicting the most energy-efficient lighting state with **98% classification accuracy**.
+This project presents an intelligent lighting control system that leverages TinyML for edge-based decision-making. By processing environmental data locally on an ESP32 microcontroller, the system maximizes energy efficiency while ensuring real-time response and data privacy. Unlike traditional threshold-based automation, this system employs a Feedforward Neural Network (FNN) to analyze motion, ambient light, and temperature, predicting the most energy-efficient lighting state with **98% classification accuracy**.
 
 ---
 
