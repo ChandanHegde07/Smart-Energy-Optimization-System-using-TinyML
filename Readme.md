@@ -54,7 +54,6 @@ The core research contribution is demonstrating that a resource-constrained micr
 | Temperature/Humidity | DHT11 / DHT22 | Thermal environment monitoring |
 | Motion Sensor | PIR (HC-SR501) | Human presence detection |
 | Ambient Light | LDR (GL5528 or equivalent) | Brightness measurement (ADC) |
-| Relay Module | 5V Single-Channel | Actuates lighting load |
 
 ### Software & ML
 
@@ -77,7 +76,6 @@ The core research contribution is demonstrating that a resource-constrained micr
 | DHT11/DHT22 DATA | GPIO 4 | 10kΩ pull-up to 3.3V |
 | PIR (HC-SR501) OUT | GPIO 5 | Digital HIGH = motion detected |
 | LDR (Voltage Divider) | GPIO 34 (ADC1_CH6) | Use ADC1 pins only; ADC2 conflicts with Wi-Fi |
-| Relay IN | GPIO 26 | Active LOW logic; drive via NPN transistor if needed |
 | DHT / PIR VCC | 3.3V | HC-SR501 can accept 5V; check sensor datasheet |
 | All GND | GND | Common ground |
 
