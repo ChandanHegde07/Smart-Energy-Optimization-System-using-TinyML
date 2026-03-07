@@ -72,7 +72,6 @@ node_modules/
 *.elf
 
 Sensor Data.csv
-Sensor_Data_Engineered.csv
 occupancy_fnn_int8.tflite
 occupancy_fnn_model.h5
 scaler.pkl
@@ -80,16 +79,4 @@ deployment_params.pkl
 
 reports/statistics.json
 predictions.csv
-
-
-reports_labeled/
-
 train.ipynb
-model_architecture.py
-reports/
-src/
-results/ml_algorithm_comparison.png
-
-static/
-templates/
-app.py

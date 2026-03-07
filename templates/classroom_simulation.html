@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Smart Classroom - Simulation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --bg-panel: rgba(10, 10, 12, 0.85);
+            --accent-primary: #FF5500;
+            --text-main: #ffffff;
+            --text-muted: #888888;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --success: #10b981;
+            --danger: #ef4444;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', sans-serif; 
+            overflow: hidden; 
+            background: var(--bg-deep); 
+            color: var(--text-main);
+        }
+
+        #canvas-container { 
+            width: 100%; 
+            height: 100vh; 
+            position: relative; 
+            background: #101015; 
+        }
+        
+        /* --- Modern Glass Panels --- */
+        .overlay { 
+            position: absolute; 
+            top: 24px; 
+            left: 24px; 
+            background: var(--bg-panel); 
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            padding: 24px; 
+            border-radius: 16px; 
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6); 
+            max-width: 320px; 
+            z-index: 100; 
+            transition: all 0.3s ease;
+        }
+
+        .overlay h2 { 
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-main); 
+            margin-bottom: 20px; 
+            font-size: 1.25rem; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .overlay h2 i { color: var(--accent-primary); }
+        
+        /* --- Sensor Grid --- */
+        .sensor-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 24px; 
+        }
+
+        .sensor-item { 
+            background: rgba(255, 255, 255, 0.03); 
+            border: 1px solid var(--border-color);
+            padding: 12px; 
+            border-radius: 8px; 
+            text-align: center; 
+        }
+
+        .sensor-label { 
+            font-size: 0.75rem; 
+            color: var(--text-muted); 
+            text-transform: uppercase; 
+            letter-spacing: 0.05em; 
+            margin-bottom: 4px; 
+        }
+
+        .sensor-value { 
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--accent-primary);
+        }
+        
+        /* --- Controls --- */
+        .controls { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 20px; 
+        }
+
+        .control-btn { 
+            padding: 10px; 
+            background: transparent;
+            border: 1px solid var(--border-color);
+            border-radius: 8px; 
+            color: var(--text-main); 
+            font-size: 0.85rem; 
+            font-weight: 600;
+            cursor: pointer; 
+            transition: all 0.2s ease; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .control-btn:hover { 
+            background: rgba(255, 255, 255, 0.05); 
+            border-color: var(--text-muted);
+        }
+
+        .sim-btn { 
+            grid-column: 1 / -1; 
+            background: rgba(255, 85, 0, 0.1);
+            border-color: rgba(255, 85, 0, 0.3);
+            color: var(--accent-primary);
+        }
+
+        .sim-btn:hover {
+            background: rgba(255, 85, 0, 0.2);
+            border-color: var(--accent-primary);
+        }
+
+        .sim-btn.active { 
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+            color: var(--danger); 
+        }
+        
+        /* --- Status Indicators --- */
+        .status-dot { 
+            width: 8px; 
+            height: 8px; 
+            border-radius: 50%; 
+        }
+        .status-on { background: var(--success); box-shadow: 0 0 8px var(--success); }
+        .status-off { background: var(--text-muted); opacity: 0.3; }
+        
+        /* --- View Controls --- */
+        .view-controls { 
+            margin-top: 20px; 
+            padding-top: 20px; 
+            border-top: 1px solid var(--border-color); 
+        }
+
+        .view-controls h3 { 
+            font-size: 0.85rem; 
+            color: var(--text-muted); 
+            margin-bottom: 12px; 
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .view-grid { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 8px; 
+        }
+
+        .view-btn { 
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+
+        .view-btn.active { 
+            background: var(--text-main); 
+            color: var(--bg-deep); 
+            border-color: var(--text-main);
+        }
+        
+        /* --- Info Footer --- */
+        .info { 
+            margin-top: 20px; 
+            padding-top: 15px; 
+            border-top: 1px solid var(--border-color); 
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        .info span { color: var(--text-main); }
+        
+        /* --- Bottom Notification --- */
+        .instructions { 
+            position: absolute; 
+            bottom: 32px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: var(--bg-panel);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            padding: 12px 24px; 
+            border-radius: 100px; 
+            color: var(--text-main); 
+            font-size: 0.85rem; 
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            white-space: nowrap;
+            z-index: 100;
+        }
+        
+        /* --- Loading Screen --- */
+        .loading { 
+            position: absolute; 
+            inset: 0;
+            background: var(--bg-deep);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            z-index: 200; 
+        }
+
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 85, 0, 0.3);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            font-family: 'Space Grotesk', sans-serif;
+            color: var(--text-main);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body>
+    <div id="canvas-container"></div>
+    
+    <div class="loading" id="loadingScreen">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Initializing Environment...</div>
+    </div>
+    
+    <div class="overlay">
+        <h2><i class="fas fa-cube"></i> Classroom Sim</h2>
+        
+        <div class="sensor-grid">
+            <div class="sensor-item">
+                <div class="sensor-label">Occupancy</div>
+                <div class="sensor-value" id="occupancy">0</div>
+            </div>
+            <div class="sensor-item">
+                <div class="sensor-label">Temperature</div>
+                <div class="sensor-value" id="temperature">22°C</div>
+            </div>
+            <div class="sensor-item">
+                <div class="sensor-label">Light Level</div>
+                <div class="sensor-value" id="lightLevel">300</div>
+            </div>
+            <div class="sensor-item">
+                <div class="sensor-label">Humidity</div>
+                <div class="sensor-value" id="humidity">45%</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="control-btn" onclick="toggleAllLights()">
+                <div class="status-dot status-off" id="lightStatus"></div> Lights
+            </button>
+            <button class="control-btn" onclick="toggleAllFans()">
+                <div class="status-dot status-off" id="fanStatus"></div> Fans
+            </button>
+            <button class="control-btn sim-btn" id="manualBtn" onclick="toggleManualMode()">
+                <i class="fas fa-sliders-h"></i> Enable Manual Test
+            </button>
+        </div>
+        
+        <div class="view-controls">
+            <h3><i class="fas fa-video"></i> Camera Feed</h3>
+            <div class="view-grid">
+                <button id="btn-teacher" class="control-btn view-btn" onclick="setView('teacher')">Teacher</button>
+                <button id="btn-student" class="control-btn view-btn" onclick="setView('student')">Student</button>
+                <button id="btn-cctv" class="control-btn view-btn" onclick="setView('cctv')">CCTV</button>
+                <button id="btn-free" class="control-btn view-btn active" onclick="setView('free')">Free View</button>
+            </div>
+        </div>
+        
+        <div class="info">
+            <div>POWER: <span id="power">0 W</span></div>
+            <div>MODE: <span id="systemStatus" style="color: var(--success)">AUTO (Server Synced)</span></div>
+        </div>
+    </div>
+    
+    <div class="instructions" id="instructions">
+        <i class="fas fa-sync fa-spin"></i> 
+        <span>Simulation synced with Live Dashboard</span>
+    </div>
+
+    <!-- THREE.JS LIBRARIES -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+
+    <!-- SIMULATION LOGIC -->
+    <script>
+        let scene, camera, renderer, raycaster, controls;
+        const mouse = new THREE.Vector2();
+        const clickableObjects = [];
+        let allStudents = [];
+        const loadingManager = new THREE.LoadingManager();
+        const gltfLoader = new THREE.GLTFLoader(loadingManager);
+        let studentModel = null;
+        let deskModel = null;
+        let manualMode = false; 
+        let ambientLight, sunLight;
+
+        let zones = { 
+            frontLeft: { lights: null, fan: null, bulb: null, lightsOn: false, fanOn: false, occupancy: 0 }, 
+            frontRight: { lights: null, fan: null, bulb: null, lightsOn: false, fanOn: false, occupancy: 0 }, 
+            backLeft: { lights: null, fan: null, bulb: null, lightsOn: false, fanOn: false, occupancy: 0 }, 
+            backRight: { lights: null, fan: null, bulb: null, lightsOn: false, fanOn: false, occupancy: 0 } 
+        };
+        const TEMP_THRESHOLD = 25;
+        
+        const soundManager = {
+            audioContext: null, sounds: {}, fanSoundSource: null,
+            init() { try { this.audioContext = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { console.warn("Web Audio API not supported"); } },
+            loadSound(name, url) { if (!this.audioContext) return; fetch(url).then(r => r.arrayBuffer()).then(b => this.audioContext.decodeAudioData(b)).then(d => { this.sounds[name] = d; }).catch(e => console.error(e)); },
+            playSound(name, loop = false, volume = 0.5) { if (!this.audioContext || !this.sounds[name]) return null; if (this.audioContext.state === 'suspended') this.audioContext.resume(); const s = this.audioContext.createBufferSource(); s.buffer = this.sounds[name]; s.loop = loop; const g = this.audioContext.createGain(); g.gain.value = volume; s.connect(g).connect(this.audioContext.destination); s.start(0); return s; },
+            updateFanSound() { const anyFan = Object.values(zones).some(z => z.fanOn); if (anyFan && !this.fanSoundSource) this.fanSoundSource = this.playSound('fan', true, 0.4); else if (!anyFan && this.fanSoundSource) { this.fanSoundSource.stop(); this.fanSoundSource = null; } }
+        };
+
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x101015); 
+            // IMPROVEMENT: Realistic Fog
+            scene.fog = new THREE.FogExp2(0x101015, 0.02);
+
+            camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 25, 25);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            // IMPROVEMENT: High Quality Shadows & Lighting
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            renderer.outputEncoding = THREE.sRGBEncoding;
+            renderer.toneMapping = THREE.ReinhardToneMapping;
+            renderer.toneMappingExposure = 1.2;
+
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+            
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.maxPolarAngle = Math.PI / 2 - 0.05; // Prevent going under floor
+            
+            raycaster = new THREE.Raycaster();
+            soundManager.init();
+            soundManager.loadSound('lightSwitch', 'https://cdn.freesound.org/previews/27/27314_37876-lq.mp3');
+            soundManager.loadSound('fan', 'https://cdn.freesound.org/previews/243/243733_4284964-lq.mp3');
+            
+            loadingManager.onLoad = () => { document.getElementById('loadingScreen').style.display = 'none'; startScene(); };
+            gltfLoader.load("{{ url_for('static', filename='models/desk/scene.gltf') }}", (g) => { deskModel = g.scene; }, undefined, () => console.warn("Desk fallback"));
+            gltfLoader.load("{{ url_for('static', filename='models/student/scene.gltf') }}", (g) => { studentModel = g.scene; }, undefined, () => console.warn("Student fallback"));
+            setTimeout(() => { document.getElementById('loadingScreen').style.display = 'none'; startScene(); }, 2000);
+        }
+
+        function startScene() {
+            createEnvironment(); createLighting(); createFurniture();
+            window.addEventListener('resize', onWindowResize);
+            document.body.addEventListener('click', onCanvasClick, true);
+            animate();
+            setInterval(syncSystem, 2000);
+            syncSystem();
+        }
+
+        function createFurniture() {
+            const tDesk = createDesk(1.2); if(tDesk) { tDesk.position.set(0,0,-10.5); scene.add(tDesk); }
+            for(let r=0; r<7; r++) {
+                for(let c=0; c<5; c++) {
+                    const s = createStudent(); allStudents.push(s);
+                    const d = createDesk(0.8); if(!d) continue;
+                    const pos = new THREE.Vector3(-12 + c*6, 0.36, -6 + r*2.5);
+                    d.position.copy(pos); 
+                    
+                    const x=d.position.x, z=d.position.z;
+                    let zoneName = '';
+                    if(x<0 && z<0) zoneName='frontLeft'; 
+                    else if(x>=0 && z<0) zoneName='frontRight';
+                    else if(x<0 && z>=0) zoneName='backLeft'; 
+                    else zoneName='backRight';
+                    
+                    s.userData.zone = zoneName; 
+                    d.userData.student = s;     
+                    d.userData.zone = zoneName; 
+
+                    s.position.copy(pos); s.position.y += -0.35; s.position.z += 0.2;
+                    scene.add(d); scene.add(s); clickableObjects.push(d);
+                }
+            }
+            zones.frontLeft.fan=createFan([-7,11,-5]); zones.frontRight.fan=createFan([7,11,-5]);
+            zones.backLeft.fan=createFan([-7,11,5]); zones.backRight.fan=createFan([7,11,5]);
+            scene.add(zones.frontLeft.fan, zones.frontRight.fan, zones.backLeft.fan, zones.backRight.fan);
+        }
+
+        function createDesk(s) {
+            if(deskModel) { 
+                const d=deskModel.clone(); 
+                d.scale.set(s,s,s); 
+                d.rotation.y=-Math.PI/2; 
+                d.traverse(child => { 
+                    if (child.isMesh) { 
+                        child.castShadow = true; 
+                        child.receiveShadow = true; 
+                        // IMPROVEMENT: Better wood material
+                        if(child.material) {
+                             child.material.roughness = 0.8;
+                             child.material.metalness = 0.1;
+                        }
+                    } 
+                });
+                return d; 
+            }
+            const g=new THREE.Group(); 
+            const m=new THREE.Mesh(new THREE.BoxGeometry(2*s,0.1*s,1.2*s), new THREE.MeshStandardMaterial({color:0x5d4037, roughness:0.7})); 
+            m.position.y=0.75*s; 
+            m.castShadow = true; m.receiveShadow = true;
+            g.add(m); return g;
+        }
+
+        function createStudent() {
+            if(studentModel) { 
+                const s=studentModel.clone(); 
+                s.rotation.y=Math.PI; 
+                s.visible=false; 
+                s.traverse(child => { if (child.isMesh) { child.castShadow = true; } });
+                return s; 
+            }
+            const g=new THREE.Group(); 
+            const m=new THREE.Mesh(new THREE.CylinderGeometry(0.3,0.3,0.8), new THREE.MeshStandardMaterial({color:0x3b82f6, roughness:0.5})); 
+            m.position.y=0.4; 
+            m.castShadow = true;
+            g.add(m); g.visible=false; return g;
+        }
+
+        function createFan(p) {
+            const g=new THREE.Group(); 
+            const base = new THREE.Mesh(new THREE.CylinderGeometry(0.4,0.4,0.5), new THREE.MeshStandardMaterial({color:0x333333, metalness:0.5, roughness:0.5}));
+            base.castShadow = true;
+            g.add(base);
+            
+            for(let i=0;i<4;i++){
+                const b=new THREE.Mesh(new THREE.BoxGeometry(3,0.1,0.5), new THREE.MeshStandardMaterial({color:0xcccccc, metalness:0.3, roughness:0.2})); 
+                b.rotation.y=(Math.PI/2)*i; b.position.y=-0.3; 
+                b.castShadow = true;
+                g.add(b);
+            }
+            g.position.set(p[0],p[1],p[2]); return g;
+        }
+        
+        function createEnvironment() {
+            // IMPROVEMENT: Realistic Floor with Reflections
+            const floorMat = new THREE.MeshStandardMaterial({
+                color: 0x222224, 
+                roughness: 0.5, 
+                metalness: 0.1
+            });
+            const floor=new THREE.Mesh(new THREE.PlaneGeometry(60,60), floorMat); 
+            floor.rotation.x=-Math.PI/2; 
+            floor.receiveShadow = true;
+            scene.add(floor);
+            
+            // Walls - Softer color
+            const wallMat=new THREE.MeshStandardMaterial({color:0x333339, roughness:0.9});
+            const back=new THREE.Mesh(new THREE.BoxGeometry(30,12,0.3), wallMat); back.position.set(0,6,-12.5); back.receiveShadow = true; scene.add(back);
+            const left=new THREE.Mesh(new THREE.BoxGeometry(0.3,12,25), wallMat); left.position.set(-15,6,0); left.receiveShadow = true; scene.add(left);
+            const right=new THREE.Mesh(new THREE.BoxGeometry(0.3,12,25), wallMat); right.position.set(15,6,0); right.receiveShadow = true; scene.add(right);
+            
+            const blackboard = new THREE.Mesh(new THREE.BoxGeometry(10, 4, 0.2), new THREE.MeshStandardMaterial({ color: 0x151515, roughness: 0.8 })); 
+            blackboard.position.set(0, 6, -12.3); 
+            scene.add(blackboard);
+
+            const windowMaterial = new THREE.MeshPhysicalMaterial({ 
+                color: 0xaaccff, 
+                transmission: 0.9, 
+                opacity: 1, 
+                transparent: true, 
+                roughness: 0, 
+                metalness: 0.1,
+                thickness: 0.5
+            }); 
+            for (let i = 0; i < 3; i++) { 
+                const windowZ = -6 + i * 6; 
+                const frame = new THREE.Mesh(new THREE.BoxGeometry(0.2, 3.2, 2.7), new THREE.MeshStandardMaterial({ color: 0x111111 })); 
+                frame.position.set(14.9, 7, windowZ); 
+                scene.add(frame); 
+                const pane = new THREE.Mesh(new THREE.BoxGeometry(0.1, 3, 2.6), windowMaterial); 
+                pane.position.set(14.85, 7, windowZ); 
+                scene.add(pane); 
+            } 
+
+            const door = new THREE.Mesh(new THREE.BoxGeometry(0.2, 8, 3), new THREE.MeshStandardMaterial({ color: 0x3d2b1f })); 
+            door.position.set(-14.9, 4, 10); 
+            scene.add(door); 
+        }
+        
+        function createLighting() {
+            // IMPROVEMENT: Dual-tone Ambient Light
+            const hemiLight = new THREE.HemisphereLight(0x88aaff, 0x222222, 0.4);
+            scene.add(hemiLight);
+            
+            // IMPROVEMENT: Sun Light creating window shadows
+            sunLight = new THREE.DirectionalLight(0xfff0dd, 0.8); // Warm sunlight color
+            sunLight.position.set(30, 20, 0); 
+            sunLight.castShadow = true;
+            sunLight.shadow.mapSize.width = 2048;
+            sunLight.shadow.mapSize.height = 2048;
+            sunLight.shadow.camera.near = 0.5;
+            sunLight.shadow.camera.far = 60;
+            sunLight.shadow.bias = -0.0001;
+            scene.add(sunLight);
+            
+            // LOCAL ZONE LIGHTS
+            const pos={frontLeft:[-8,11.5,-5], frontRight:[8,11.5,-5], backLeft:[-8,11.5,5], backRight:[8,11.5,5]};
+            for(const k in pos) {
+                const p=pos[k]; 
+                const l=new THREE.PointLight(0xffaa44, 0, 15, 2); // Warmer bulb light
+                l.position.set(p[0],p[1]-0.5,p[2]); 
+                l.castShadow = true;
+                l.shadow.bias = -0.0001;
+                scene.add(l); zones[k].lights=l;
+                
+                const b=new THREE.Mesh(new THREE.SphereGeometry(0.3), new THREE.MeshStandardMaterial({color:0x555555, emissive:0x000000})); 
+                b.position.set(p[0],p[1]-0.5,p[2]); scene.add(b); zones[k].bulb=b;
+            }
+        }
+
+        function onCanvasClick(e) {
+            if(soundManager.audioContext && soundManager.audioContext.state==='suspended') soundManager.audioContext.resume();
+            if(e.target.closest('.overlay')) return;
+            mouse.x=(e.clientX/window.innerWidth)*2-1; mouse.y=-(e.clientY/window.innerHeight)*2+1;
+            raycaster.setFromCamera(mouse, camera);
+            const hits=raycaster.intersectObjects(clickableObjects, true);
+            
+            if(hits.length>0 && manualMode) {
+                let obj=hits[0].object; while(obj.parent && !obj.userData.student) obj=obj.parent;
+                if(obj.userData.student) {
+                    const s=obj.userData.student; 
+                    s.visible = !s.visible; 
+                    recalculateZoneOccupancy();
+                    syncSystem();
+                }
+            }
+        }
+        function animate() {
+            requestAnimationFrame(animate); controls.update(); renderer.render(scene, camera);
+            for(const k in zones) if(zones[k].fan && zones[k].fan.userData.rotating) zones[k].fan.rotation.y+=0.1;
+        }
+
+        function toggleManualMode() {
+            manualMode = !manualMode;
+            const btn = document.getElementById('manualBtn');
+            const status = document.getElementById('systemStatus');
+            const instr = document.getElementById('instructions');
+            if(manualMode) {
+                btn.innerHTML = "<i class='fas fa-ban'></i> Stop Manual Test"; btn.classList.add('active');
+                status.textContent = "MANUAL"; status.style.color = "var(--danger)";
+                instr.innerHTML = "<i class='fas fa-mouse-pointer'></i> <span>Click desks to toggle students</span>";
+                resetClassroom();
+            } else {
+                btn.innerHTML = "<i class='fas fa-sliders-h'></i> Enable Manual Test"; btn.classList.remove('active');
+                status.textContent = "AUTO (Server Synced)"; status.style.color = "var(--success)";
+                instr.innerHTML = "<i class='fas fa-sync fa-spin'></i> <span>Simulation synced with Live Dashboard</span>";
+            }
+            syncSystem();
+        }
+        
+        function resetClassroom() {
+            allStudents.forEach(s => s.visible = false);
+            for(const k in zones) zones[k].occupancy = 0;
+            document.getElementById('occupancy').textContent = 0;
+            updateStatusUI();
+        }
+
+        function recalculateZoneOccupancy() {
+            for(const k in zones) zones[k].occupancy = 0;
+            allStudents.forEach(s => {
+                if (s.visible && s.userData.zone) {
+                    zones[s.userData.zone].occupancy++;
+                }
+            });
+        }
+
+        function syncSystem() {
+            if(!manualMode) {
+                // --- AUTO MODE ---
+                fetch('/get_prediction')
+                    .then(r=>r.json())
+                    .then(data => {
+                        document.getElementById('temperature').textContent = data.temperature + '°C';
+                        document.getElementById('lightLevel').textContent = Math.round(data.ldr);
+                        
+                        const currentOcc = parseInt(document.getElementById('occupancy').textContent);
+                        
+                        if (data.pir === 1 && currentOcc === 0) {
+                             allStudents.forEach(s => s.visible = false);
+                             const zoneKeys = Object.keys(zones);
+                             const activeZoneCount = Math.floor(Math.random() * 4) + 1; 
+                             zoneKeys.sort(() => Math.random() - 0.5);
+                             const selectedZones = zoneKeys.slice(0, activeZoneCount);
+                             
+                             selectedZones.forEach(targetZone => {
+                                 const validDesks = clickableObjects.filter(d => d.userData.zone === targetZone);
+                                 const studentCount = Math.floor(Math.random() * 5) + 2;
+                                 validDesks.sort(() => Math.random() - 0.5);
+                                 for(let i=0; i < Math.min(studentCount, validDesks.length); i++) {
+                                     const desk = validDesks[i];
+                                     if(desk.userData.student) desk.userData.student.visible = true;
+                                 }
+                             });
+                        } else if (data.pir === 0 && currentOcc > 0) {
+                             allStudents.forEach(s => s.visible = false);
+                        }
+                        
+                        recalculateZoneOccupancy();
+                        applyLogic(data);
+                        updateStatusUI();
+                    }).catch(e => console.error(e));
+            } else {
+                // --- MANUAL MODE ---
+                const t = (20 + Math.random()*10).toFixed(1);
+                const l = Math.floor(200 + Math.random()*800); 
+                document.getElementById('temperature').textContent = t + '°C';
+                document.getElementById('lightLevel').textContent = l;
+                
+                recalculateZoneOccupancy();
+                
+                let occ=0; for(const k in zones) occ+=zones[k].occupancy;
+                const pir = occ>0 ? 1 : 0;
+                
+                fetch('/update', {
+                    method:'POST', headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({pir: pir, ldr: l, temperature: parseFloat(t)})
+                })
+                .then(r=>r.json())
+                .then(d => {
+                    applyLogic(d);
+                    updateStatusUI();
+                });
+            }
+        }
+        
+        function applyLogic(data) {
+            const aiSaysLightOn = data.prediction.includes("ON") || (data.prediction.includes("Light") && !data.prediction.includes("OFF"));
+            const envRequiresFan = parseFloat(document.getElementById('temperature').textContent) > TEMP_THRESHOLD;
+
+            for (const k in zones) {
+                const zone = zones[k];
+                const hasStudents = zone.occupancy > 0;
+                
+                const turnLight = aiSaysLightOn && hasStudents;
+                const turnFan = envRequiresFan && hasStudents;
+                
+                updateZoneVisuals(k, turnLight, turnFan);
+            }
+        }
+        
+        function updateZoneVisuals(k, l, f) {
+            const z=zones[k]; z.lightsOn=l; z.fanOn=f;
+            if(z.lights) z.lights.intensity=l?1.5:0;
+            // IMPROVEMENT: Warm bulb color
+            if(z.bulb) z.bulb.material.emissive.setHex(l?0xFF9900:0x000000);
+            if(z.fan) z.fan.userData.rotating=f;
+        }
+        function updateStatusUI() {
+            let p=0, l=false, f=false, o=0;
+            for(const k in zones) { o+=zones[k].occupancy; if(zones[k].lightsOn){p+=40;l=true;} if(zones[k].fanOn){p+=35;f=true;} }
+            document.getElementById('power').textContent=p+' W';
+            document.getElementById('occupancy').textContent=o;
+            
+            const lStat = document.getElementById('lightStatus');
+            lStat.className = l ? 'status-dot status-on' : 'status-dot status-off';
+            
+            const fStat = document.getElementById('fanStatus');
+            fStat.className = f ? 'status-dot status-on' : 'status-dot status-off';
+            
+            soundManager.updateFanSound();
+        }
+        
+        function toggleAllLights(){ if(!manualMode) return; const n=!zones.frontLeft.lightsOn; for(const k in zones) updateZoneVisuals(k,n,zones[k].fanOn); soundManager.playSound('lightSwitch'); updateStatusUI(); }
+        function toggleAllFans(){ if(!manualMode) return; const n=!zones.frontLeft.fanOn; for(const k in zones) updateZoneVisuals(k,zones[k].lightsOn,n); updateStatusUI(); }
+        function onWindowResize(){ camera.aspect=window.innerWidth/window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth,window.innerHeight); }
+        function setView(t){ document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active')); document.getElementById('btn-'+t).classList.add('active'); controls.enabled=(t==='free'); if(t==='teacher'){camera.position.set(0,8,-12);controls.target.set(0,5,0);} else if(t==='student'){camera.position.set(-7,8,8);controls.target.set(0,6,-5);} else if(t==='cctv'){camera.position.set(14,13,14);controls.target.set(-2,0,-2);} else {camera.position.set(0,25,25);controls.target.set(0,0,0);} }
+
+        init();
+    </script>
+</body>
+</html>

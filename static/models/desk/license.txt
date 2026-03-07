@@ -1,0 +1,11 @@
+Model Information:
+* title:	High school desk
+* source:	https://sketchfab.com/3d-models/high-school-desk-b014b969c2c9455396cc6829cf729a7d
+* author:	Chenchanchong (https://sketchfab.com/Chenchanchong)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "High school desk" (https://sketchfab.com/3d-models/high-school-desk-b014b969c2c9455396cc6829cf729a7d) by Chenchanchong (https://sketchfab.com/Chenchanchong) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
