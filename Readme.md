@@ -1,95 +1,123 @@
-Smart Energy Optimization System
-================================
+SMART Optimization
+==================
 
-TinyML occupancy detection for classrooms.
-
-Reads PIR motion, light, and temperature data. Runs a compact neural net.
-Controls lights/fans based on occupancy prediction. Tracks estimated energy,
-CO2, and cost savings.
+SMART Optimization is a TinyML occupancy detection system for classrooms.
+It reads PIR motion, light, and temperature signals, predicts occupancy with a
+compact neural network, and drives energy-aware light/fan control logic.
 
 
-What this is
-------------
-
-A research prototype for edge-friendly occupancy detection.
-
-- Model: feedforward neural net (MLP)
-- Deployment target: constrained hardware (ESP32-class)
-- Export: int8 quantized TFLite
-- Goal: practical inference speed with high classification quality
-
-Not production building-management software.
-
-
-Model summary
--------------
-
-Architecture:
-
-- Input: 8 engineered features
-- Hidden layers: 32, 16 (ReLU)
-- Output: 1 (sigmoid)
-- Regularization: dropout
-- Training: Adam + binary crossentropy
-
-Features:
-
-- Temperature (raw)
-- Light level (raw)
-- PIR motion (raw)
-- 3-sample moving average (light)
-- 3-sample moving average (temperature)
-- Light delta over 3 samples
-- Temperature delta over 3 samples
-- Hour of day encoded with sin/cos
-
-Temporal features are required for current performance levels.
-
-
-Performance
+Quick Start
 -----------
 
-Test-set metrics (controlled dataset):
-
-- Accuracy: ~98%
-- Precision: ~0.97
-- Recall: ~0.96
-- F1: ~0.97
-- ROC-AUC: ~0.99
-
-Approx. inference latency (per sample):
-
-- FNN: 0.5-2 ms (edge-capable)
-- XGBoost: 5-10 ms
-- Gradient Boosting: 10-20 ms
-- KNN: 50-100 ms
-
-Real-world performance depends on sensor quality and placement.
+* Run the app: `python app.py`
+* Retrain the model: `python src/model.py`
+* Compare baselines: `python src/compare_ml_dl.py`
+* Dashboard: `http://localhost:5001/dashboard`
 
 
-Repository layout
------------------
+Essential Project Files
+-----------------------
 
-- app.py: Flask app and inference endpoints
-- src/model.py: training/retraining pipeline
-- src/compare_ml_dl.py: baseline comparison scripts
-- occupancy_fnn_model.h5: trained model
-- occupancy_fnn_int8.tflite: quantized deployment model
-- scaler.pkl: fitted feature scaler
-- Sensor_Data_Engineered.csv: engineered training dataset
-- Sensor.cpp: reference ESP32 firmware
-- templates/, static/: dashboard frontend assets
+All users should know these files:
+
+* Main app: `app.py`
+* Training pipeline: `src/model.py`
+* Model comparison: `src/compare_ml_dl.py`
+* Trained model: `occupancy_fnn_model.h5`
+* Quantized model: `occupancy_fnn_int8.tflite`
+* Feature scaler: `scaler.pkl`
+* Training dataset: `Sensor_Data_Engineered.csv`
+* ESP32 reference firmware: `Sensor.cpp`
+* Frontend assets: `templates/`, `static/`
 
 
-Run
----
+System Summary
+--------------
 
-Requirements:
+* Model type: Feedforward Neural Network (MLP)
+* Input size: 8 engineered features
+* Hidden layers: 32, 16 (ReLU)
+* Output: 1 (sigmoid)
+* Export: TFLite int8 quantized
+* Typical inference: ~0.5-2 ms per sample
 
-- Python 3.8+
-- pip
+Reference metrics (controlled test set):
 
-Commands:
+* Accuracy: ~98%
+* Precision: ~0.97
+* Recall: ~0.96
+* F1: ~0.97
+* ROC-AUC: ~0.99
+
+
+Who Are You?
+============
+
+Find your role below:
+
+* New Contributor - Running and understanding the project
+* ML Engineer - Training, evaluation, and feature engineering
+* Edge/Embedded Developer - Firmware and deployment constraints
+* Frontend Contributor - Dashboard and simulation UI changes
+* Reviewer/Maintainer - Validation, quality, and release decisions
+
+
+For Specific Users
+==================
+
+New Contributor
+---------------
+
+Start here:
+
+* Install dependencies: `pip install -r requirements.txt`
+* Run server: `python app.py`
+* Open dashboard: `http://localhost:5001/dashboard`
+* Explore templates/UI: `templates/`, `static/`
+
+ML Engineer
+-----------
+
+Model workflow:
+
+* Retrain pipeline: `python src/model.py`
+* Compare alternatives: `python src/compare_ml_dl.py`
+* Dataset source: `Sensor_Data_Engineered.csv`
+* Outputs to verify: `occupancy_fnn_model.h5`, `occupancy_fnn_int8.tflite`, `scaler.pkl`
+
+Edge/Embedded Developer
+-----------------------
+
+Deployment focus:
+
+* Firmware reference: `Sensor.cpp`
+* Use quantized model: `occupancy_fnn_int8.tflite`
+* Check inference budget and memory limits on target MCU
+* Validate with real sensor placement before production use
+
+Frontend Contributor
+--------------------
+
+UI and visualization focus:
+
+* Flask routes in `app.py`
+* Dashboard templates in `templates/`
+* Static assets/scripts in `static/`
+* Validate manual mode, auto mode, and charts after UI edits
+
+Reviewer/Maintainer
+-------------------
+
+Before merge/release:
+
+* Confirm app boots cleanly (`python app.py`)
+* Validate model artifacts exist and load correctly
+* Re-check performance claims after retraining
+* Ensure dashboard behavior matches occupancy predictions
+
+
+Run Locally
+-----------
 
 ```
 git clone https://github.com/ChandanHegde07/Smart-Energy-Optimization-System-using-TinyML.git
@@ -98,48 +126,11 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Server default: `http://localhost:5001`
-
 Routes:
 
-- `/` landing page
-- `/dashboard` main interface
-- `/classroom_simulation` 3D visualization
-
-
-Retrain model
--------------
-
-```
-python src/model.py
-```
-
-This regenerates:
-
-- occupancy_fnn_model.h5
-- occupancy_fnn_int8.tflite
-- scaler.pkl
-
-
-Compare models
---------------
-
-```
-python src/compare_ml_dl.py
-```
-
-Used to benchmark FNN vs classical alternatives for latency and practicality
-on constrained hardware.
-
-
-Dashboard behavior
-------------------
-
-- Manual mode: user sets PIR/light/temperature and gets model prediction
-- Auto mode: cycles through predefined demo scenarios
-- Outputs: estimated kWh saved, CO2 reduction, and cost savings
-
-3D scene is a demonstration layer built with Three.js. Charts use Chart.js.
+* `/` landing page
+* `/dashboard` main dashboard
+* `/classroom_simulation` 3D classroom simulation
 
 
 License
