@@ -1,153 +1,151 @@
 Smart Energy Optimization System
-=================================
+================================
 
-This is a TinyML-based occupancy detection system that controls classroom
-lights and fans. It uses a small feedforward neural network trained on PIR
-motion, ambient light, and temperature sensor data. It works. That's the
-point.
+TinyML occupancy detection for classrooms.
 
-If you're here looking for a 47-slide pitch deck explaining "the vision",
-go away. This is a README, not a TED talk.
+Reads PIR motion, light, and temperature data. Runs a compact neural net.
+Controls lights/fans based on occupancy prediction. Tracks estimated energy,
+CO2, and cost savings.
 
 
-What it does
+What this is
 ------------
 
-Reads three sensor inputs. Runs them through a neural net. Turns lights and
-fans on or off depending on whether someone's actually in the room. Tracks
-how much energy you saved. Done.
+A research prototype for edge-friendly occupancy detection.
 
-The model hits 98% accuracy on the test set. Before you get excited — that
-number comes from a controlled dataset. Real-world performance depends on
-how badly you've set up your sensors.
+- Model: feedforward neural net (MLP)
+- Deployment target: constrained hardware (ESP32-class)
+- Export: int8 quantized TFLite
+- Goal: practical inference speed with high classification quality
 
-
-The model
----------
-
-MLP. Nothing exotic. 8 input features, two hidden layers (32 and 16
-neurons), ReLU activations, sigmoid output, dropout to stop it from
-memorizing noise. Adam optimizer, binary crossentropy loss.
-
-Input features:
-  - Temperature (raw)
-  - Light level (raw)
-  - PIR motion (raw)
-  - 3-sample moving average of light
-  - 3-sample moving average of temperature
-  - Light delta over last 3 samples
-  - Temperature delta over last 3 samples
-  - Hour of day encoded as sin/cos (so midnight and 11pm aren't 23 units apart)
-
-The temporal features matter. If you strip them out and feed raw sensor
-readings directly, accuracy drops. Don't do that.
-
-Model gets exported to TFLite int8 quantized format for edge deployment.
-Inference is under 2ms per sample on a microcontroller. Compare that to
-KNN at 50-100ms. KNN is not going on your ESP32. The FNN is.
+Not production building-management software.
 
 
-Files that matter
------------------
-
-  app.py                    Flask server, ML inference endpoints
-  src/model.py              Training pipeline, run this to retrain
-  src/compare_ml_dl.py      Benchmarks FNN vs XGBoost, GBM, KNN
-  occupancy_fnn_model.h5    Trained model, use this directly
-  scaler.pkl                StandardScaler fitted on training data
-  Sensor_Data_Engineered.csv  The training dataset
-  Sensor.cpp                ESP32 firmware, for reference
-
-Everything under templates/ and static/ is the web dashboard. Three.js
-handles the 3D classroom visualization. Chart.js handles the graphs. Flask
-serves it all.
-
-
-How to run it
+Model summary
 -------------
 
-You need Python 3.8 or newer. You need pip. You presumably know how to use
-a terminal. If you don't, this project is not for you yet.
+Architecture:
 
-  git clone https://github.com/ChandanHegde07/Smart-Energy-Optimization-System-using-TinyML.git
-  cd SMART-Optimization
-  pip install -r requirements.txt
-  python app.py
+- Input: 8 engineered features
+- Hidden layers: 32, 16 (ReLU)
+- Output: 1 (sigmoid)
+- Regularization: dropout
+- Training: Adam + binary crossentropy
 
-Server starts on port 5001. Open http://localhost:5001 in a browser.
+Features:
 
-  /              Landing page
-  /dashboard     The actual interface
-  /classroom_simulation  3D visualization if you want that
+- Temperature (raw)
+- Light level (raw)
+- PIR motion (raw)
+- 3-sample moving average (light)
+- 3-sample moving average (temperature)
+- Light delta over 3 samples
+- Temperature delta over 3 samples
+- Hour of day encoded with sin/cos
 
-To retrain from scratch:
-
-  python src/model.py
-
-This overwrites occupancy_fnn_model.h5, occupancy_fnn_int8.tflite, and
-scaler.pkl. Don't do this unless you have a reason to.
-
-To run the model comparison:
-
-  python src/compare_ml_dl.py
-
-This will tell you what you already know: the FNN is faster and smaller
-than the alternatives, and that matters when your target hardware has 256KB
-of RAM.
+Temporal features are required for current performance levels.
 
 
-Performance numbers
--------------------
+Performance
+-----------
 
-  Accuracy   ~98%
-  Precision  ~0.97
-  Recall     ~0.96
-  F1         ~0.97
-  ROC-AUC    ~0.99
+Test-set metrics (controlled dataset):
 
-Inference speed (per sample):
+- Accuracy: ~98%
+- Precision: ~0.97
+- Recall: ~0.96
+- F1: ~0.97
+- ROC-AUC: ~0.99
 
-  FNN               0.5–2ms     runs on edge hardware
-  XGBoost           5–10ms      doesn't
-  Gradient Boosting 10–20ms     doesn't
-  KNN               50–100ms    absolutely not
+Approx. inference latency (per sample):
 
+- FNN: 0.5-2 ms (edge-capable)
+- XGBoost: 5-10 ms
+- Gradient Boosting: 10-20 ms
+- KNN: 50-100 ms
 
-What the dashboard does
------------------------
-
-Manual mode: you set PIR, light level, and temperature. The model
-predicts occupancy. The UI shows you what lights and fans would do.
-
-Auto mode: cycles through demonstration scenarios automatically.
-
-Either way it tracks cumulative energy saved (kWh), CO2 reduced (kg),
-and cost savings (rupees). The calculations are estimates based on typical
-classroom power draw. Don't use them for an energy audit.
-
-The 3D simulation is a Three.js scene with a desk and student model. The
-lighting in the scene changes based on model predictions. It's a
-demonstration tool. It works fine.
+Real-world performance depends on sensor quality and placement.
 
 
-What this is NOT
-----------------
+Repository layout
+-----------------
 
-This is not production-ready building management software. It's a
-research prototype demonstrating that a quantized MLP is good enough for
-occupancy detection and small enough to deploy to constrained hardware.
-The ESP32 firmware is included for reference — wiring your actual
-classroom requires you to read the firmware and figure out your own
-sensor placement.
+- app.py: Flask app and inference endpoints
+- src/model.py: training/retraining pipeline
+- src/compare_ml_dl.py: baseline comparison scripts
+- occupancy_fnn_model.h5: trained model
+- occupancy_fnn_int8.tflite: quantized deployment model
+- scaler.pkl: fitted feature scaler
+- Sensor_Data_Engineered.csv: engineered training dataset
+- Sensor.cpp: reference ESP32 firmware
+- templates/, static/: dashboard frontend assets
 
-Don't email asking for support. Open a GitHub issue. Include logs.
+
+Run
+---
+
+Requirements:
+
+- Python 3.8+
+- pip
+
+Commands:
+
+```
+git clone https://github.com/ChandanHegde07/Smart-Energy-Optimization-System-using-TinyML.git
+cd SMART-Optimization
+pip install -r requirements.txt
+python app.py
+```
+
+Server default: `http://localhost:5001`
+
+Routes:
+
+- `/` landing page
+- `/dashboard` main interface
+- `/classroom_simulation` 3D visualization
+
+
+Retrain model
+-------------
+
+```
+python src/model.py
+```
+
+This regenerates:
+
+- occupancy_fnn_model.h5
+- occupancy_fnn_int8.tflite
+- scaler.pkl
+
+
+Compare models
+--------------
+
+```
+python src/compare_ml_dl.py
+```
+
+Used to benchmark FNN vs classical alternatives for latency and practicality
+on constrained hardware.
+
+
+Dashboard behavior
+------------------
+
+- Manual mode: user sets PIR/light/temperature and gets model prediction
+- Auto mode: cycles through predefined demo scenarios
+- Outputs: estimated kWh saved, CO2 reduction, and cost savings
+
+3D scene is a demonstration layer built with Three.js. Charts use Chart.js.
 
 
 License
 -------
 
-MIT. See LICENSE.
+MIT. See `LICENSE`.
 
-There's also a patent notice — the system is covered under an Indian
-Patent Office filing by Sai Vidya Institute of Technology. Read the
-LICENSE file before you fork this and try to commercialize it.
+Patent notice applies (Indian Patent Office filing by Sai Vidya Institute of
+Technology). Review `LICENSE` before commercial use.
