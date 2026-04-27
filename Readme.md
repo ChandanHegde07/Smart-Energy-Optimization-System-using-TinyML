@@ -1,4 +1,5 @@
 SMART Optimization
+![Last Updated](https://img.shields.io/badge/Last_Updated-March_2026-eeb901?style=flat)
 ==================
 
 SMART Optimization is a TinyML occupancy detection system for classrooms.
