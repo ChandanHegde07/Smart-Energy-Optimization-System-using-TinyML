@@ -1,143 +1,157 @@
-SMART Optimization
-![Last Updated](https://img.shields.io/badge/Last_Updated-March_2026-eeb901?style=flat)
-==================
+# SMART Optimization
 
-SMART Optimization is a TinyML occupancy detection system for classrooms.
-It reads PIR motion, light, and temperature signals, predicts occupancy with a
-compact neural network, and drives energy-aware light/fan control logic.
+A TinyML occupancy detection system for classrooms. SMART Optimization reads PIR motion, light, and temperature signals, predicts occupancy with a compact neural network, and drives energy-aware light/fan control logic.
 
+---
 
-Quick Start
------------
+## Table of Contents
 
-* Run the app: `python app.py`
-* Retrain the model: `python src/model.py`
-* Compare baselines: `python src/compare_ml_dl.py`
-* Dashboard: `http://localhost:5001/dashboard`
+- [Quick Start](#quick-start)
+- [System Summary](#system-summary)
+- [Reference Metrics](#reference-metrics)
+- [Essential Project Files](#essential-project-files)
+- [Who Are You?](#who-are-you)
+  - [New Contributor](#new-contributor)
+  - [ML Engineer](#ml-engineer)
+  - [Edge/Embedded Developer](#edgeembedded-developer)
+  - [Frontend Contributor](#frontend-contributor)
+  - [Reviewer/Maintainer](#reviewermaintainer)
+- [Run Locally](#run-locally)
+- [Routes](#routes)
+- [License](#license)
 
+---
 
-Essential Project Files
------------------------
+## Quick Start
 
-All users should know these files:
+| Task | Command |
+|---|---|
+| Run the app | `python app.py` |
+| Retrain the model | `python src/model.py` |
+| Compare baselines | `python src/compare_ml_dl.py` |
+| Dashboard | `http://localhost:5001/dashboard` |
 
-* Main app: `app.py`
-* Training pipeline: `src/model.py`
-* Model comparison: `src/compare_ml_dl.py`
-* Trained model: `occupancy_fnn_model.h5`
-* Quantized model: `occupancy_fnn_int8.tflite`
-* Feature scaler: `scaler.pkl`
-* Training dataset: `Sensor_Data_Engineered.csv`
-* ESP32 reference firmware: `Sensor.cpp`
-* Frontend assets: `templates/`, `static/`
+---
 
+## System Summary
 
-System Summary
---------------
+| Property | Value |
+|---|---|
+| Model type | Feedforward Neural Network (MLP) |
+| Input size | 8 engineered features |
+| Hidden layers | 32, 16 (ReLU) |
+| Output | 1 (sigmoid) |
+| Export | TFLite INT8 quantized |
+| Typical inference | ~0.5–2 ms per sample |
 
-* Model type: Feedforward Neural Network (MLP)
-* Input size: 8 engineered features
-* Hidden layers: 32, 16 (ReLU)
-* Output: 1 (sigmoid)
-* Export: TFLite int8 quantized
-* Typical inference: ~0.5-2 ms per sample
+## Reference Metrics
 
-Reference metrics (controlled test set):
+*Measured on a controlled test set.*
 
-* Accuracy: ~98%
-* Precision: ~0.97
-* Recall: ~0.96
-* F1: ~0.97
-* ROC-AUC: ~0.99
+| Metric | Value |
+|---|---|
+| Accuracy | ~98% |
+| Precision | ~0.97 |
+| Recall | ~0.96 |
+| F1 | ~0.97 |
+| ROC-AUC | ~0.99 |
 
+---
 
-Who Are You?
-============
+## Essential Project Files
 
-Find your role below:
+All contributors should be familiar with these files:
 
-* New Contributor - Running and understanding the project
-* ML Engineer - Training, evaluation, and feature engineering
-* Edge/Embedded Developer - Firmware and deployment constraints
-* Frontend Contributor - Dashboard and simulation UI changes
-* Reviewer/Maintainer - Validation, quality, and release decisions
+| File | Purpose |
+|---|---|
+| `app.py` | Main application (Flask server, routes) |
+| `src/model.py` | Training pipeline |
+| `src/compare_ml_dl.py` | Model comparison across ML/DL baselines |
+| `occupancy_fnn_model.h5` | Trained model (Keras) |
+| `occupancy_fnn_int8.tflite` | Quantized model for edge deployment |
+| `scaler.pkl` | Feature scaler used at inference time |
+| `Sensor_Data_Engineered.csv` | Training dataset |
+| `Sensor.cpp` | ESP32 reference firmware |
+| `templates/`, `static/` | Frontend assets |
 
+---
 
-For Specific Users
-==================
+## Who Are You?
 
-New Contributor
----------------
+Jump to the section that matches what you're trying to do:
+
+- **[New Contributor](#new-contributor)** — running and understanding the project
+- **[ML Engineer](#ml-engineer)** — training, evaluation, and feature engineering
+- **[Edge/Embedded Developer](#edgeembedded-developer)** — firmware and deployment constraints
+- **[Frontend Contributor](#frontend-contributor)** — dashboard and simulation UI changes
+- **[Reviewer/Maintainer](#reviewermaintainer)** — validation, quality, and release decisions
+
+### New Contributor
 
 Start here:
 
-* Install dependencies: `pip install -r requirements.txt`
-* Run server: `python app.py`
-* Open dashboard: `http://localhost:5001/dashboard`
-* Explore templates/UI: `templates/`, `static/`
+1. Install dependencies: `pip install -r requirements.txt`
+2. Run the server: `python app.py`
+3. Open the dashboard: `http://localhost:5001/dashboard`
+4. Explore the UI: `templates/`, `static/`
 
-ML Engineer
------------
+### ML Engineer
 
 Model workflow:
 
-* Retrain pipeline: `python src/model.py`
-* Compare alternatives: `python src/compare_ml_dl.py`
-* Dataset source: `Sensor_Data_Engineered.csv`
-* Outputs to verify: `occupancy_fnn_model.h5`, `occupancy_fnn_int8.tflite`, `scaler.pkl`
+- Retrain pipeline: `python src/model.py`
+- Compare alternatives: `python src/compare_ml_dl.py`
+- Dataset source: `Sensor_Data_Engineered.csv`
+- Outputs to verify: `occupancy_fnn_model.h5`, `occupancy_fnn_int8.tflite`, `scaler.pkl`
 
-Edge/Embedded Developer
------------------------
+### Edge/Embedded Developer
 
 Deployment focus:
 
-* Firmware reference: `Sensor.cpp`
-* Use quantized model: `occupancy_fnn_int8.tflite`
-* Check inference budget and memory limits on target MCU
-* Validate with real sensor placement before production use
+- Firmware reference: `Sensor.cpp`
+- Use the quantized model: `occupancy_fnn_int8.tflite`
+- Check inference budget and memory limits on the target MCU
+- Validate with real sensor placement before production use
 
-Frontend Contributor
---------------------
+### Frontend Contributor
 
 UI and visualization focus:
 
-* Flask routes in `app.py`
-* Dashboard templates in `templates/`
-* Static assets/scripts in `static/`
-* Validate manual mode, auto mode, and charts after UI edits
+- Flask routes in `app.py`
+- Dashboard templates in `templates/`
+- Static assets/scripts in `static/`
+- Validate manual mode, auto mode, and charts after any UI edits
 
-Reviewer/Maintainer
--------------------
+### Reviewer/Maintainer
 
 Before merge/release:
 
-* Confirm app boots cleanly (`python app.py`)
-* Validate model artifacts exist and load correctly
-* Re-check performance claims after retraining
-* Ensure dashboard behavior matches occupancy predictions
+- [ ] Confirm the app boots cleanly (`python app.py`)
+- [ ] Validate model artifacts exist and load correctly
+- [ ] Re-check performance claims after retraining
+- [ ] Ensure dashboard behavior matches occupancy predictions
 
+---
 
-Run Locally
------------
+## Run Locally
 
-```
+```bash
 git clone https://github.com/ChandanHegde07/Smart-Energy-Optimization-System-using-TinyML.git
-cd SMART-Optimization
+cd Smart-Energy-Optimization-System-using-TinyML
 pip install -r requirements.txt
 python app.py
 ```
 
-Routes:
+## Routes
 
-* `/` landing page
-* `/dashboard` main dashboard
-* `/classroom_simulation` 3D classroom simulation
+| Route | Description |
+|---|---|
+| `/` | Landing page |
+| `/dashboard` | Main dashboard |
+| `/classroom_simulation` | 3D classroom simulation |
 
+## License
 
-License
--------
+MIT. See [`LICENSE`](./LICENSE).
 
-MIT. See `LICENSE`.
-
-Patent notice applies (Indian Patent Office filing by Sai Vidya Institute of
-Technology). Review `LICENSE` before commercial use.
+> **Patent notice applies** (Indian Patent Office filing by Sai Vidya Institute of Technology). Review `LICENSE` before commercial use.
