@@ -4,24 +4,6 @@ A TinyML occupancy detection system for classrooms. SMART Optimization reads PIR
 
 ---
 
-## Table of Contents
-
-- [Quick Start](#quick-start)
-- [System Summary](#system-summary)
-- [Reference Metrics](#reference-metrics)
-- [Essential Project Files](#essential-project-files)
-- [Who Are You?](#who-are-you)
-  - [New Contributor](#new-contributor)
-  - [ML Engineer](#ml-engineer)
-  - [Edge/Embedded Developer](#edgeembedded-developer)
-  - [Frontend Contributor](#frontend-contributor)
-  - [Reviewer/Maintainer](#reviewermaintainer)
-- [Run Locally](#run-locally)
-- [Routes](#routes)
-- [License](#license)
-
----
-
 ## Quick Start
 
 | Task | Command |
